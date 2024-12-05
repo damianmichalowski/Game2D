@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 auto main() -> int {
@@ -7,17 +8,18 @@ auto main() -> int {
         sf::Style::Default,
         sf::ContextSettings(0,0,0)
     );
-    auto circle = sf::CircleShape(50.0f, 7);
-    circle.setPosition(sf::Vector2f(100, 100));
-    circle.setFillColor(sf::Color::Red);
-    circle.setOutlineThickness(2);
-    circle.setOutlineColor(sf::Color::Yellow);
-
-    auto rectangle = sf::RectangleShape(sf::Vector2f(200, 2));
-    rectangle.setPosition(sf::Vector2f(100, 100));
-    rectangle.setFillColor(sf::Color::Green);
-    rectangle.setOrigin(rectangle.getSize() / 2.0f);
-    rectangle.rotate(45);
+    window.setFramerateLimit(240);
+    auto playerTexture = sf::Texture();
+    if (!playerTexture.loadFromFile("../Assets/Player/Textures/BODY_male.png")) {
+        std::cerr << "Failed to load player.png" << std::endl;
+        return 1;
+    }
+    auto playerSprite = sf::Sprite(playerTexture);
+    // max x: 8, y: 3
+    int playerSpriteXIndex = 0;
+    int playerSpriteYIndex = 2;
+    playerSprite.setTextureRect(sf::IntRect(playerSpriteXIndex * 64, playerSpriteYIndex * 64, 64, 64));
+    playerSprite.setScale(sf::Vector2f(1,1));
     //-----------------INIT-------------------
 
     // Main Loop
@@ -29,13 +31,25 @@ auto main() -> int {
                 window.close();
             }
         }
+
+        auto position = playerSprite.getPosition();
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            playerSprite.setPosition(position + sf::Vector2(1.0f,0.f));
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            playerSprite.setPosition(position + sf::Vector2(-1.0f,0.f));
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            playerSprite.setPosition(position + sf::Vector2(0.f,-1.f));
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            playerSprite.setPosition(position + sf::Vector2(0.f,1.f));
         //-----------------UPDATE-------------------
 
 
         //-----------------DRAW-------------------
         window.clear(sf::Color::Black);
-        window.draw(circle);
-        window.draw(rectangle);
+        window.draw(playerSprite);
         window.display();
         //-----------------DRAW-------------------
     }
