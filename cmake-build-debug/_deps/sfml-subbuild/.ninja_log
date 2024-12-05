@@ -1,0 +1,21 @@
+# ninja log v6
+0	17	1733421935618490302	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-mkdir	c11a3ca2afdeb51a
+0	17	1733421935618490302	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-mkdir	c11a3ca2afdeb51a
+17	17475	1733421953076507146	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-download	591ed21f6ab84396
+17	17475	1733421953076507146	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-download	591ed21f6ab84396
+17475	17511	1733421953077185975	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-update	d65717f53a793ed2
+17475	17511	1733421953077185975	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-update	d65717f53a793ed2
+17511	17529	1733421953130139100	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-patch	f309a16a5af8c968
+17511	17529	1733421953130139100	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-patch	f309a16a5af8c968
+17529	17544	1733421953145875876	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-configure	5f01c3265d5cb90a
+17529	17544	1733421953145875876	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-configure	5f01c3265d5cb90a
+17545	17560	1733421953161664110	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-build	26ad0757c6309b85
+17545	17560	1733421953161664110	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-build	26ad0757c6309b85
+17560	17577	1733421953178534504	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-install	7eca8d1a5bce916e
+17560	17577	1733421953178534504	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-install	7eca8d1a5bce916e
+17577	17595	1733421953196341976	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-test	13d64fca6009afa7
+17577	17595	1733421953196341976	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-test	13d64fca6009afa7
+17595	17618	1733421953219647829	CMakeFiles/sfml-populate-complete	57febd6ad5d1cb10
+17595	17618	1733421953219647829	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-done	57febd6ad5d1cb10
+17595	17618	1733421953219647829	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/CMakeFiles/sfml-populate-complete	57febd6ad5d1cb10
+17595	17618	1733421953219647829	/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-done	57febd6ad5d1cb10

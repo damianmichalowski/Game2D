@@ -1,0 +1,18 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/damianmichalowski/Documents/Projects/gameCpp -B /Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug
+CMake Warning (dev) at cmake-build-debug/_deps/sfml-src/cmake/Config.cmake:55 (EXEC_PROGRAM):
+  Policy CMP0153 is not set: The exec_program command should not be called.
+  Run "cmake --help-policy CMP0153" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Use execute_process() instead.
+Call Stack (most recent call first):
+  cmake-build-debug/_deps/sfml-src/CMakeLists.txt:41 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found OpenGL: /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework
+-- Found OpenAL: /Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/OpenAL.framework
+-- Found VORBIS: /Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/vorbisenc.framework;/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/vorbisfile.framework;/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/vorbis.framework;/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/ogg.framework
+-- Found FLAC: /Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/FLAC.framework
+-- Configuring done (18.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug
