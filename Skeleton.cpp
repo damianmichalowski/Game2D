@@ -26,7 +26,7 @@ void Skeleton::Load() {
     sprite.setPosition(sf::Vector2f(400,100));
 }
 
-void Skeleton::Update() {
+void Skeleton::Update(float deltaTime) {
     boundingBox.setPosition(sprite.getPosition());
 }
 

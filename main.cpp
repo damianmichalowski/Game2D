@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 #include "Player.h"
@@ -6,10 +7,11 @@
 auto main() -> int {
     //-----------------INIT-------------------
     auto window = sf::RenderWindow(
-        sf::VideoMode(1920, 1080), "MyGame",
+        sf::VideoMode(1200, 680), "MyGame",
         sf::Style::Default,
         sf::ContextSettings(0,0,8)
     );
+    // window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
     //-----------------INIT-------------------
 
@@ -25,7 +27,11 @@ auto main() -> int {
     //-----------------LOAD-------------------
 
     // Main Loop
+    sf::Clock clock;
+
     while (window.isOpen()){
+        sf::Time deltaTimeTimer = clock.restart();
+        float deltaTime = deltaTimeTimer.asMilliseconds();
         //-----------------UPDATE-------------------
         auto event = sf::Event();
         while (window.pollEvent(event)) {
@@ -33,8 +39,8 @@ auto main() -> int {
                 window.close();
             }
         }
-        skeleton.Update();
-        player.Update(skeleton);
+        skeleton.Update(deltaTime);
+        player.Update(deltaTime , skeleton);
         //-----------------UPDATE-------------------
 
 
