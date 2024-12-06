@@ -57,6 +57,30 @@ build CMakeFiles/gameCpp.dir/main.cpp.o: CXX_COMPILER__gameCpp_unscanned_Debug /
   OBJECT_DIR = CMakeFiles/gameCpp.dir
   OBJECT_FILE_DIR = CMakeFiles/gameCpp.dir
 
+build CMakeFiles/gameCpp.dir/Player.cpp.o: CXX_COMPILER__gameCpp_unscanned_Debug /Users/damianmichalowski/Documents/Projects/gameCpp/Player.cpp || cmake_object_order_depends_target_gameCpp
+  DEFINES = -DSFML_STATIC
+  DEP_FILE = CMakeFiles/gameCpp.dir/Player.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -F/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks
+  INCLUDES = -I/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/include
+  OBJECT_DIR = CMakeFiles/gameCpp.dir
+  OBJECT_FILE_DIR = CMakeFiles/gameCpp.dir
+
+build CMakeFiles/gameCpp.dir/Skeleton.cpp.o: CXX_COMPILER__gameCpp_unscanned_Debug /Users/damianmichalowski/Documents/Projects/gameCpp/Skeleton.cpp || cmake_object_order_depends_target_gameCpp
+  DEFINES = -DSFML_STATIC
+  DEP_FILE = CMakeFiles/gameCpp.dir/Skeleton.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -F/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks
+  INCLUDES = -I/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/include
+  OBJECT_DIR = CMakeFiles/gameCpp.dir
+  OBJECT_FILE_DIR = CMakeFiles/gameCpp.dir
+
+build CMakeFiles/gameCpp.dir/Math.cpp.o: CXX_COMPILER__gameCpp_unscanned_Debug /Users/damianmichalowski/Documents/Projects/gameCpp/Math.cpp || cmake_object_order_depends_target_gameCpp
+  DEFINES = -DSFML_STATIC
+  DEP_FILE = CMakeFiles/gameCpp.dir/Math.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -F/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks
+  INCLUDES = -I/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/include
+  OBJECT_DIR = CMakeFiles/gameCpp.dir
+  OBJECT_FILE_DIR = CMakeFiles/gameCpp.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target gameCpp
@@ -65,7 +89,7 @@ build CMakeFiles/gameCpp.dir/main.cpp.o: CXX_COMPILER__gameCpp_unscanned_Debug /
 #############################################
 # Link the executable gameCpp
 
-build gameCpp: CXX_EXECUTABLE_LINKER__gameCpp_Debug CMakeFiles/gameCpp.dir/main.cpp.o | _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a || _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a
+build gameCpp: CXX_EXECUTABLE_LINKER__gameCpp_Debug CMakeFiles/gameCpp.dir/main.cpp.o CMakeFiles/gameCpp.dir/Player.cpp.o CMakeFiles/gameCpp.dir/Skeleton.cpp.o CMakeFiles/gameCpp.dir/Math.cpp.o | _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a || _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk
   LINK_LIBRARIES = -Wl,-rpath,/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks  _deps/sfml-build/lib/libsfml-graphics-s-d.a  _deps/sfml-build/lib/libsfml-window-s-d.a  _deps/sfml-build/lib/libsfml-system-s-d.a  -lpthread  -ObjC  -framework OpenGL  -framework Foundation  -framework AppKit  -framework IOKit  -framework Carbon  -framework freetype
   LINK_PATH = -F/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks

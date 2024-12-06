@@ -15,5 +15,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
-add_executable(gameCpp main.cpp)
+add_executable(gameCpp main.cpp
+        Player.cpp
+        Player.h
+        Skeleton.cpp
+        Skeleton.h
+        Math.cpp
+        Math.h)
 target_link_libraries(gameCpp sfml-graphics)
