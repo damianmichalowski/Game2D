@@ -7,7 +7,10 @@ class Player {
 private:
     sf::Texture texture;
     std::vector<sf::RectangleShape> bullets;
-    float bulletSpeed = 3.0f;
+    float bulletSpeed = 1.0f;
+
+    sf::RectangleShape boundingBox;
+    sf::Vector2i size;
 
 public:
     sf::Sprite sprite;

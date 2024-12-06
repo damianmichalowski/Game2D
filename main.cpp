@@ -10,7 +10,7 @@ auto main() -> int {
         sf::Style::Default,
         sf::ContextSettings(0,0,8)
     );
-    // window.setFramerateLimit(500);
+    window.setFramerateLimit(60);
     //-----------------INIT-------------------
 
     //-----------------LOAD-------------------
