@@ -21,5 +21,7 @@ add_executable(gameCpp main.cpp
         Skeleton.cpp
         Skeleton.h
         Math.cpp
-        Math.h)
+        Math.h
+        FrameRate.cpp
+        FrameRate.h)
 target_link_libraries(gameCpp sfml-graphics)

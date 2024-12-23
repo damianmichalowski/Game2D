@@ -12,9 +12,12 @@ public:
     sf::RectangleShape boundingBox;
     sf::Vector2i size;
 public:
+    Skeleton();
+    ~Skeleton();
+
     void Initialize();
     void Load();
-    void Update(float deltaTime);
+    void Update(double deltaTime);
     void Draw(sf::RenderWindow& window);
 };
 

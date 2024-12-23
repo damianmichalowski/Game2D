@@ -1,6 +1,12 @@
-#include "Player.h"
 #include <iostream>
+#include "Player.h"
 #include "Math.h"
+
+Player::Player() : bulletSpeed(0.5f), playerSpeed(1.0f) {
+}
+
+Player::~Player() {
+}
 
 void Player::Initialize() {
     boundingBox.setOutlineThickness(2);
@@ -15,7 +21,6 @@ void Player::Load(){
         std::cerr << "Failed to load player.png" << std::endl;
     }
 
-    std::cerr << "Player texture loaded !" << std::endl;
     sprite.setTexture(texture);
 
     // max x: 8, y: 3
@@ -30,20 +35,20 @@ void Player::Load(){
 }
 
 
-void Player::Update(float deltaTime ,Skeleton& skeleton) {
+void Player::Update(double deltaTime ,Skeleton& skeleton) {
     sf::Vector2f position = sprite.getPosition();
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        sprite.setPosition(position + sf::Vector2(1.0f,0.0f) * playerSpeed * deltaTime);
+        sprite.setPosition(position + sf::Vector2(1.0f,0.0f) * playerSpeed * (float)deltaTime);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        sprite.setPosition(position + sf::Vector2(-1.0f,0.f) * playerSpeed * deltaTime);
+        sprite.setPosition(position + sf::Vector2(-1.0f,0.f) * playerSpeed * (float)deltaTime);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        sprite.setPosition(position + sf::Vector2(0.f,-1.f) * playerSpeed * deltaTime);
+        sprite.setPosition(position + sf::Vector2(0.f,-1.f) * playerSpeed * (float)deltaTime);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        sprite.setPosition(position + sf::Vector2(0.f,1.f) * playerSpeed * deltaTime);
+        sprite.setPosition(position + sf::Vector2(0.f,1.f) * playerSpeed * (float)deltaTime);
 
     if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         bullets.push_back(sf::RectangleShape(sf::Vector2f(10,10)));
@@ -55,7 +60,7 @@ void Player::Update(float deltaTime ,Skeleton& skeleton) {
     for (sf::RectangleShape& bullet: bullets) {
         sf::Vector2f bulletDirection = skeleton.sprite.getPosition() - bullet.getPosition();
         bulletDirection = Math::NormalizeVector(bulletDirection);
-        bullet.setPosition(bullet.getPosition() + bulletDirection * bulletSpeed * deltaTime);
+        bullet.setPosition(bullet.getPosition() + bulletDirection * bulletSpeed * (float)deltaTime);
     }
 
     boundingBox.setPosition(sprite.getPosition());

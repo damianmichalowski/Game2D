@@ -1,6 +1,12 @@
 #include "Skeleton.h"
 #include <iostream>
 
+Skeleton::Skeleton() {
+}
+
+Skeleton::~Skeleton() {
+}
+
 void Skeleton::Initialize() {
     boundingBox.setOutlineThickness(2);
     boundingBox.setOutlineColor(sf::Color::Red);
@@ -26,7 +32,7 @@ void Skeleton::Load() {
     sprite.setPosition(sf::Vector2f(400,100));
 }
 
-void Skeleton::Update(float deltaTime) {
+void Skeleton::Update(double deltaTime) {
     boundingBox.setPosition(sprite.getPosition());
 }
 

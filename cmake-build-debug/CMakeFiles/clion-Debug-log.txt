@@ -9,6 +9,6 @@ Call Stack (most recent call first):
   cmake-build-debug/_deps/sfml-src/CMakeLists.txt:41 (include)
 This warning is for project developers.  Use -Wno-dev to suppress it.
 
--- Configuring done (0.4s)
+-- Configuring done (0.3s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug

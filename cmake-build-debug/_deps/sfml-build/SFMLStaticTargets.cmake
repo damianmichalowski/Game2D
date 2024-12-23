@@ -68,8 +68,8 @@ set_target_properties(sfml-window PROPERTIES
 add_library(OpenGL INTERFACE IMPORTED)
 
 set_target_properties(OpenGL PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework"
-  INTERFACE_LINK_LIBRARIES "/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework"
+  INTERFACE_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework"
+  INTERFACE_LINK_LIBRARIES "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework"
 )
 
 # Create imported target sfml-network
@@ -102,7 +102,7 @@ set_target_properties(Freetype PROPERTIES
 add_library(OpenAL INTERFACE IMPORTED)
 
 set_target_properties(OpenAL PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenAL.framework/Headers"
+  INTERFACE_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenAL.framework/Headers"
   INTERFACE_LINK_LIBRARIES "/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/OpenAL.framework"
 )
 

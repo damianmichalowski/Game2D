@@ -184,11 +184,11 @@ CMAKE_OSX_ARCHITECTURES:STRING=
 
 //Minimum OS X version to target for deployment (at runtime); newer
 // APIs weak linked. Set to empty string for default value.
-CMAKE_OSX_DEPLOYMENT_TARGET:STRING=
+CMAKE_OSX_DEPLOYMENT_TARGET:STRING=15.1
 
 //The product will be built against the headers and libraries located
 // inside the indicated SDK.
-CMAKE_OSX_SYSROOT:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk
+CMAKE_OSX_SYSROOT:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -363,22 +363,22 @@ OGG_INCLUDE_DIR:PATH=/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-b
 OGG_LIBRARY:FILEPATH=/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/ogg.framework
 
 //Path to a file.
-OPENAL_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenAL.framework/Headers
+OPENAL_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenAL.framework/Headers
 
 //Path to a library.
 OPENAL_LIBRARY:FILEPATH=/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/OpenAL.framework
 
 //Include for the OpenGL GLU library
-OPENGL_GLU_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework
+OPENGL_GLU_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework
 
 //Include for OpenGL
-OPENGL_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework
+OPENGL_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework
 
 //OpenGL GL library
-OPENGL_gl_LIBRARY:FILEPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework
+OPENGL_gl_LIBRARY:FILEPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework
 
 //OpenGL GLU library
-OPENGL_glu_LIBRARY:FILEPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework
+OPENGL_glu_LIBRARY:FILEPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework
 
 //Value Computed by CMake
 SFML_BINARY_DIR:STATIC=/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-build
@@ -679,9 +679,9 @@ CPACK_SOURCE_ZIP-ADVANCED:INTERNAL=1
 //Details about finding FLAC
 FIND_PACKAGE_MESSAGE_DETAILS_FLAC:INTERNAL=[/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/FLAC.framework][/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/headers][v()]
 //Details about finding OpenAL
-FIND_PACKAGE_MESSAGE_DETAILS_OpenAL:INTERNAL=[/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/OpenAL.framework][/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenAL.framework/Headers][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenAL:INTERNAL=[/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/OpenAL.framework][/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenAL.framework/Headers][v()]
 //Details about finding OpenGL
-FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework][/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework][c ][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework][/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/OpenGL.framework][c ][v()]
 //Details about finding VORBIS
 FIND_PACKAGE_MESSAGE_DETAILS_VORBIS:INTERNAL=[/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/vorbisenc.framework;/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/vorbisfile.framework;/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/vorbis.framework;/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/libs-osx/Frameworks/ogg.framework][/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/headers][/Users/damianmichalowski/Documents/Projects/gameCpp/cmake-build-debug/_deps/sfml-src/extlibs/headers][v()]
 //ADVANCED property for variable: FLAC_INCLUDE_DIR
