@@ -19,11 +19,11 @@ void FrameRate::Load() {
     }
 }
 
-void FrameRate::Update(double deltaTime) {
+void FrameRate::Update(float deltaTime) {
     timer += deltaTime;
 
     if(timer >= 100.0) {
-        double fps = 1000.0;
+        float fps = 1000.0;
         frameRateText.setString("FPS: " + std::to_string((int)(fps / deltaTime)) + " Frame Time: " + std::to_string((int)deltaTime));
         timer = 0;
     }

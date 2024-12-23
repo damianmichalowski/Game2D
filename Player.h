@@ -2,12 +2,16 @@
 #define PLAYER_H
 #include <SFML/Graphics.hpp>
 #include "Skeleton.h"
+#include "Bullet.h"
 
 class Player {
 private:
     sf::Texture texture;
-    std::vector<sf::RectangleShape> bullets;
-    float bulletSpeed;
+    std::vector<Bullet> bullets;
+
+    float maxFireRate;
+    float fireRateTimer;
+
     float playerSpeed;
 
     sf::RectangleShape boundingBox;
@@ -22,7 +26,7 @@ public:
 
     void Initialize(); // once at start
     void Load(); // once at start
-    void Update(double deltaTime, Skeleton& skeleton); // once per frame
+    void Update(float deltaTime, Skeleton& skeleton, sf::Vector2f& mousePosition); // once per frame
     void Draw(sf::RenderWindow& window); // once per frame
 };
 

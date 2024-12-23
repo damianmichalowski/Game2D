@@ -11,7 +11,7 @@ auto main() -> int {
         sf::Style::Default,
         sf::ContextSettings(0,0,8)
     );
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(260);
 
     Player player;
     Skeleton skeleton;
@@ -35,11 +35,13 @@ auto main() -> int {
             }
         }
         sf::Time deltaTimeTimer = clock.restart();
-        double deltaTime = deltaTimeTimer.asMicroseconds() / 1000.0; // how long to render single frame
-        frameRate.Update(deltaTime);
+        float deltaTime = (float)(deltaTimeTimer.asMicroseconds() / 1000.0); // how long to render single frame
 
+        sf::Vector2f mousePosition = (sf::Vector2f)sf::Mouse::getPosition(window);
+
+        frameRate.Update(deltaTime);
         skeleton.Update(deltaTime);
-        player.Update(deltaTime , skeleton);
+        player.Update(deltaTime , skeleton, mousePosition);
 
         window.clear(sf::Color::Black);
         player.Draw(window);

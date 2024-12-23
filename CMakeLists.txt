@@ -23,5 +23,7 @@ add_executable(gameCpp main.cpp
         Math.cpp
         Math.h
         FrameRate.cpp
-        FrameRate.h)
+        FrameRate.h
+        Bullet.cpp
+        Bullet.h)
 target_link_libraries(gameCpp sfml-graphics)

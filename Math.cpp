@@ -21,3 +21,7 @@ sf::Vector2f Math::NormalizeVector(sf::Vector2f& vector) {
 bool Math::CheckCollision(const sf::Sprite& sprite1, const sf::Sprite& sprite2) {
     return sprite1.getGlobalBounds().intersects(sprite2.getGlobalBounds());
 }
+
+bool Math::CheckCollision(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
+    return rect1.intersects(rect2);
+}
