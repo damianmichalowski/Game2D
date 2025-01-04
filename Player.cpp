@@ -5,7 +5,8 @@
 Player::Player() :
 playerSpeed(0.3f),
 maxFireRate(150),
-fireRateTimer(0){
+fireRateTimer(0),
+immortal(false){
 }
 
 Player::~Player() {
@@ -25,8 +26,8 @@ void Player::Initialize() {
     //heart
     maxHealth = 3;
     currentHealth = maxHealth;
-    heartAttackTimer = 0;
-    maxheartAttackRate = 1000;
+    heartAttackCooldownTimer = 0;
+    heartAttackCooldown = 1000;
 
 
 }
@@ -66,9 +67,17 @@ void Player::Update(float deltaTime, Skeleton& skeleton, sf::Vector2f& mousePosi
     CheckBulletCollisions(skeleton, deltaTime);
     boundingBox.setPosition(sprite.getPosition());
 
-    if (Math::CheckCollision(sprite, skeleton.sprite)) {
+    if (Math::CheckCollision(sprite, skeleton.sprite) && !immortal) {
         std::cout << "Player get hit" << std::endl;
-        HandleHeartAttack(deltaTime, 1);
+        HandleHeartAttack(1);
+    }
+
+    if (immortal) {
+        heartAttackCooldownTimer += deltaTime;
+        if (heartAttackCooldownTimer >= heartAttackCooldown) {
+            immortal = false;
+            heartAttackCooldownTimer = 0; // Resetujemy timer
+        }
     }
 }
 
@@ -140,11 +149,10 @@ void Player::CheckBulletCollisions(Skeleton& skeleton, float deltaTime) {
     }), bullets.end());
 }
 
-void Player::HandleHeartAttack(float deltaTime, int hearts) {
-    heartAttackTimer += deltaTime;
-    if(heartAttackTimer >= maxheartAttackRate) {
-        currentHealth-= hearts;
-        heartAttackTimer = 0;
+void Player::HandleHeartAttack(int heartsTaken) {
+    if (!immortal) {
+        currentHealth -= heartsTaken;
+        immortal = true;
     }
 }
 

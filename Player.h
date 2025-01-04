@@ -13,6 +13,7 @@ private:
     float fireRateTimer;
 
     float playerSpeed;
+    bool immortal;
 
     sf::RectangleShape boundingBox;
     sf::Vector2i size;
@@ -29,14 +30,14 @@ private:
     int currentHealth;
     sf::Texture heartTexture;
     std::vector<sf::Sprite> hearts;
-    float heartAttackTimer;
-    float maxheartAttackRate;
+    float heartAttackCooldownTimer;
+    float heartAttackCooldown;
 
     void HandleMovement(float deltaTime);
     void HandleAnimation(float deltaTime);
     void HandleShooting(float deltaTime, sf::Vector2f& mousePosition);
     void CheckBulletCollisions(Skeleton& skeleton, float deltaTime);
-    void HandleHeartAttack(float deltaTime, int hearts);
+    void HandleHeartAttack(int hearts);
 
 public:
     sf::Sprite sprite;
