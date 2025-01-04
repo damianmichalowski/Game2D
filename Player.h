@@ -17,17 +17,37 @@ private:
     sf::RectangleShape boundingBox;
     sf::Vector2i size;
 
+    //movement animation
+    int currentFrame;
+    float animationTimer;
+    float animationSpeed;
+    int frameCount;
+    sf::Vector2i spriteSize;
+
+    //health
+    int maxHealth;
+    int currentHealth;
+    sf::Texture heartTexture;
+    std::vector<sf::Sprite> hearts;
+    float heartAttackTimer;
+    float maxheartAttackRate;
+
+    void HandleMovement(float deltaTime);
+    void HandleAnimation(float deltaTime);
+    void HandleShooting(float deltaTime, sf::Vector2f& mousePosition);
+    void CheckBulletCollisions(Skeleton& skeleton, float deltaTime);
+    void HandleHeartAttack(float deltaTime, int hearts);
+
 public:
     sf::Sprite sprite;
 
-public:
     Player();
     ~Player();
 
-    void Initialize(); // once at start
-    void Load(); // once at start
-    void Update(float deltaTime, Skeleton& skeleton, sf::Vector2f& mousePosition); // once per frame
-    void Draw(sf::RenderWindow& window); // once per frame
+    void Initialize();
+    void Load();
+    void Update(float deltaTime, Skeleton& skeleton, sf::Vector2f& mousePosition);
+    void Draw(sf::RenderWindow& window);
 };
 
 

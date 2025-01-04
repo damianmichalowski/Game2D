@@ -6,11 +6,15 @@
 #include "Skeleton.h"
 
 auto main() -> int {
-    auto window = sf::RenderWindow(
-        sf::VideoMode(1200, 680), "MyGame",
-        sf::Style::Default,
-        sf::ContextSettings(0,0,8)
-    );
+    sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+    sf::RenderWindow window(desktopMode, "Game", sf::Style::Default, sf::ContextSettings(0,0,8));
+
+
+    // auto window = sf::RenderWindow(
+    //     sf::VideoMode(1200, 680), "MyGame",
+    //     sf::Style::Default,
+    //     sf::ContextSettings(0,0,8)
+    // );
     window.setFramerateLimit(260);
 
     Player player;
