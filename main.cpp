@@ -44,7 +44,7 @@ auto main() -> int {
         sf::Vector2f mousePosition = (sf::Vector2f)sf::Mouse::getPosition(window);
 
         frameRate.Update(deltaTime);
-        skeleton.Update(deltaTime);
+        skeleton.Update(deltaTime, player);
         player.Update(deltaTime , skeleton, mousePosition);
 
         window.clear(sf::Color::Black);

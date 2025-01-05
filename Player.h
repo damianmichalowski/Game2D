@@ -4,6 +4,8 @@
 #include "Skeleton.h"
 #include "Bullet.h"
 
+class Skeleton;
+
 class Player {
 private:
     sf::Texture texture;
