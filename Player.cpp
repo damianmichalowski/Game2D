@@ -1,18 +1,22 @@
 #include <iostream>
 #include "Player.h"
+#include "Enemy.h"
 #include "Math.h"
 
 Player::Player() :
-playerSpeed(0.3f),
-maxFireRate(150),
+playerSpeed(0.1f),
+maxFireRate(600),
 fireRateTimer(0),
-immortal(false){
+immortal(false),
+direction(0.0f, 0.0f){
 }
 
 Player::~Player() {
 }
 
-void Player::Initialize() {
+void Player::Initialize(Room& room) {
+    currentRoom = &room;
+
     boundingBox.setOutlineThickness(2);
     boundingBox.setOutlineColor(sf::Color::Green);
     boundingBox.setFillColor(sf::Color::Transparent);
@@ -26,8 +30,8 @@ void Player::Initialize() {
     //heart
     maxHealth = 3;
     currentHealth = maxHealth;
-    heartAttackCooldownTimer = 0;
-    heartAttackCooldown = 1000;
+    takeDamageCooldownTimer = 0;
+    takeDamageCooldown = 1000;
 
 
 }
@@ -52,37 +56,51 @@ void Player::Load(){
     int spriteXIndex = 0;
     int spriteYIndex = 2;
 
-    sprite.scale(sf::Vector2f(1,1));
+    sprite.scale(sf::Vector2f(0.25f,0.25f));  //tile_size/aktualny rozmiar 64px
     boundingBox.setSize(sf::Vector2f(spriteSize.x * sprite.getScale().x,spriteSize.y * sprite.getScale().y));
 
     sprite.setTextureRect(sf::IntRect(spriteXIndex * spriteSize.x, spriteYIndex * spriteSize.y, spriteSize.x, spriteSize.y));
-    sprite.setPosition(sf::Vector2f(1000,600));
+    sprite.setPosition(sf::Vector2f(40,40));
 }
 
 
-void Player::Update(float deltaTime, Skeleton& skeleton, sf::Vector2f& mousePosition) {
+void Player::Update(float& deltaTime) {
     HandleMovement(deltaTime);
-    HandleAnimation(deltaTime);
-    HandleShooting(deltaTime, mousePosition);
-    CheckBulletCollisions(skeleton, deltaTime);
+    HandleShooting(deltaTime);
     boundingBox.setPosition(sprite.getPosition());
 
-    if (Math::CheckCollision(sprite, skeleton.sprite) && !immortal) {
-        std::cout << "Player get hit" << std::endl;
-        HandleHeartAttack(1);
-    }
-
     if (immortal) {
-        heartAttackCooldownTimer += deltaTime;
-        if (heartAttackCooldownTimer >= heartAttackCooldown) {
+        takeDamageCooldownTimer += deltaTime;
+        if (takeDamageCooldownTimer >= takeDamageCooldown) {
             immortal = false;
-            heartAttackCooldownTimer = 0; // Resetujemy timer
+            takeDamageCooldownTimer = 0;
         }
     }
 }
 
-void Player::HandleMovement(float deltaTime) {
-    sf::Vector2f direction(0.0f, 0.0f);
+void Player::Draw(sf::RenderWindow& window, sf::View& view) {
+    window.draw(sprite);
+    for (Bullet* bullet: bullets) {
+        bullet->Draw(window);
+    }
+
+    //halth
+    float windowHeight = view.getSize().y;
+    float heartYPosition = windowHeight - 50;
+    for (int i = 0; i < hearts.size(); ++i) {
+        hearts[i].setPosition(sf::Vector2f(10 + i * 40, heartYPosition));
+    }
+
+    for (int i = 0; i < currentHealth; i++) {
+        window.draw(hearts[i]);
+    }
+
+    window.draw(boundingBox);
+}
+
+void Player::HandleMovement(float& deltaTime) {
+    direction.x = 0.0f;
+    direction.y = 0.0f;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         direction.x += 1.0f;
@@ -97,22 +115,27 @@ void Player::HandleMovement(float deltaTime) {
         direction /= std::sqrt(2.0f);
 
     sf::Vector2f position = sprite.getPosition();
+
     position += direction * playerSpeed * deltaTime;
+
+    if (position.x < currentRoom->GetTileSize() ||
+    position.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() ||
+    position.y < currentRoom->GetTileSize() ||
+    position.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - currentRoom->GetTileSize()) {
+        return;
+    }
+
     sprite.setPosition(position);
+
+    HandleAnimation(deltaTime, direction);
 }
 
-void Player::HandleAnimation(float deltaTime) {
+void Player::HandleAnimation(float& deltaTime, sf::Vector2f& direction) {
     animationTimer += deltaTime;
-    sf::Vector2f direction(0.0f, 0.0f);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction.x += 1.0f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction.x -= 1.0f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) direction.y -= 1.0f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) direction.y += 1.0f;
 
     if (direction != sf::Vector2f(0.0f, 0.0f)) {
         if (animationTimer >= animationSpeed) {
-            currentFrame = (currentFrame + 1) % frameCount; // Przejście do następnej klatki
+            currentFrame = (currentFrame + 1) % frameCount;
             animationTimer = 0.0f;
         }
 
@@ -127,51 +150,104 @@ void Player::HandleAnimation(float deltaTime) {
     }
 }
 
-void Player::HandleShooting(float deltaTime, sf::Vector2f& mousePosition) {
-    fireRateTimer += deltaTime;
+void Player::HandleObstacles(sf::Vector2f& newPosition) {
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && fireRateTimer >= maxFireRate) {
-        bullets.push_back(Bullet());
-        bullets.back().Initialize(sprite.getPosition(), mousePosition, 0.5f);
-        fireRateTimer = 0;
+    if (newPosition.x >= currentRoom->GetTileSize() &&
+        newPosition.x + sprite.getPosition().x <= currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() &&
+        newPosition.y >= currentRoom->GetTileSize() &&
+        newPosition.y + sprite.getPosition().y <= currentRoom->GetTileSize() - currentRoom->GetTileSize()) {
+            sprite.setPosition(direction);
     }
 }
 
-void Player::CheckBulletCollisions(Skeleton& skeleton, float deltaTime) {
-    bullets.erase(std::remove_if(bullets.begin(), bullets.end(), [&](Bullet& bullet) {
-        bullet.Update(deltaTime);
-        if (skeleton.health > 0 && Math::CheckCollision(bullet.GetGlobalBounds(), skeleton.sprite.getGlobalBounds())) {
-            std::cout << "collision" << std::endl;
-            skeleton.ChangeHealth(-10);
-            return true;
+void Player::HandleShooting(const float& deltaTime) {
+    fireRateTimer += deltaTime;
+
+    if (fireRateTimer >= maxFireRate) {
+        sf::Vector2f shootingDirection(0.0f,0.0f);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            shootingDirection.x += 1.0f;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            shootingDirection.x -= 1.0f;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            shootingDirection.y -= 1.0f;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            shootingDirection.y += 1.0f;
+
+        if (shootingDirection.x != 0.0f && shootingDirection.y != 0.0f) {
+            shootingDirection /= std::sqrt(2.0f);
         }
-        return false;
-    }), bullets.end());
+
+        if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
+            Bullet* bullet = new Bullet();
+            bullet->Initialize(GetCenterOfSprite(), shootingDirection, 0.2f, 600);
+            bullets.push_back(bullet);
+            fireRateTimer = 0;
+        }
+    }
 }
 
-void Player::HandleHeartAttack(int heartsTaken) {
+// void Player::CheckBulletCollisions(const float& deltaTime, Enemy& skeleton) {
+//     bullets.erase(std::remove_if(bullets.begin(), bullets.end(), [&](Bullet& bullet) {
+//         bullet.Update(deltaTime);
+//
+//         if(!bullet.IsAlive()) {
+//             return true;
+//         }
+//
+//         if (skeleton.IsAlive() && Math::CheckCollision(bullet.GetGlobalBounds(), skeleton.GetGlobalBounds())) {
+//             std::cout << "collision" << std::endl;
+//             skeleton.TakeDamage(-bullet.GetDamage());
+//             return true;
+//         }
+//
+//         return false;
+//     }), bullets.end());
+// }
+
+void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies) {
+    for (auto& bullet : bullets) {
+        if (!bullet->IsAlive()) continue;  // Pomijaj martwe pociski
+
+        bullet->Update(deltaTime);
+
+        for (auto& enemy : enemies) {
+            // Sprawdzenie kolizji z martwym wrogiem
+            if (bullet->CheckCollision(enemy->GetSprite()) && enemy->IsAlive()) {
+                enemy->TakeDamage(bullet->GetDamage());
+                bullet->SetInactive();  // Oznacz pocisk jako nieaktywny
+                break;  // Przerwij, jeśli pocisk trafił w wroga
+            }
+        }
+    }
+
+    // Usuń nieaktywne pociski
+    bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+                                 [](Bullet* bullet) {
+                                     bool toRemove = !bullet->IsAlive();
+                                     if (toRemove) delete bullet;  // Usuń z pamięci
+                                     return toRemove;
+                                 }),
+                  bullets.end());
+}
+
+
+
+void Player::TakeDamage(int heartsTaken) {
     if (!immortal) {
         currentHealth -= heartsTaken;
         immortal = true;
     }
 }
 
-void Player::Draw(sf::RenderWindow& window){
-    window.draw(sprite);
-    for (Bullet& bullet: bullets) {
-        bullet.Draw(window);
-    }
+void Player::ChangeRoom(Player& player, Room& newRoom) {
+    player.Initialize(newRoom);
+}
 
-    //halth
-    float windowHeight = window.getSize().y;
-    float heartYPosition = windowHeight - 50;
-    for (int i = 0; i < hearts.size(); ++i) {
-        hearts[i].setPosition(sf::Vector2f(10 + i * 40, heartYPosition));
-    }
-
-    for (int i = 0; i < currentHealth; i++) {
-        window.draw(hearts[i]);
-    }
-
-    window.draw(boundingBox);
+sf::Vector2f Player::GetCenterOfSprite() const {
+    sf::Vector2f position = sprite.getPosition();
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+    sf::Vector2f center(position.x + bounds.width / 2.f, position.y + bounds.height / 2.f);
+    return center;
 }

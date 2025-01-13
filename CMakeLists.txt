@@ -25,5 +25,15 @@ add_executable(gameCpp main.cpp
         FrameRate.cpp
         FrameRate.h
         Bullet.cpp
-        Bullet.h)
+        Bullet.h
+        Enemy.cpp
+        Enemy.h
+        Dungeon.cpp
+        Dungeon.h
+        Room.cpp
+        Room.h
+        Animate.cpp
+        Animate.h
+        Difficulty.h
+)
 target_link_libraries(gameCpp sfml-graphics)
