@@ -15,8 +15,12 @@ private:
     const int ROOM_WIDTH;        // Liczba kafelków w poziomie
     const int ROOM_HEIGHT;        // Liczba kafelków w pionie
     const int NUM_OBSTACLES;
-    std::vector<sf::RectangleShape> obstacles;
+    std::vector<sf::Vector2i> obstacles;
     std::vector<sf::RectangleShape> tiles;
+    sf::Vector2i doorTop;
+    sf::Vector2i doorBottom;
+    sf::Vector2i doorLeft;
+    sf::Vector2i doorRight;
 
 
     enum ConnectionDirections { NORTH, EAST, SOUTH, WEST };
@@ -37,6 +41,12 @@ public:
     void Load();
     void Update(const float& deltaTime, Player& player);
     void Draw(sf::RenderWindow& window);
+    void InitializeDoors();
+    void GenerateObstacles();
+    bool IsWallTile(int x, int y) const;
+    bool IsExitTile(int x, int y) const;
+    bool IsObstacleTile(int x, int y) const;
+    void GenerateTiles();
 
     void GenerateWalls();
     void GenerateExit();

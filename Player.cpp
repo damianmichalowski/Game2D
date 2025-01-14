@@ -8,7 +8,14 @@ playerSpeed(0.1f),
 maxFireRate(600),
 fireRateTimer(0),
 immortal(false),
-direction(0.0f, 0.0f){
+direction(0.0f, 0.0f),
+currentFrame(0),
+animationTimer(0.0f),
+animationSpeed(150.0f),
+frameCount(8),
+maxHealth(3),
+takeDamageCooldownTimer(0),
+takeDamageCooldown(1000){
 }
 
 Player::~Player() {
@@ -16,24 +23,28 @@ Player::~Player() {
 
 void Player::Initialize(Room& room) {
     currentRoom = &room;
+    currentHealth = maxHealth;
 
     boundingBox.setOutlineThickness(2);
     boundingBox.setOutlineColor(sf::Color::Green);
     boundingBox.setFillColor(sf::Color::Transparent);
 
     spriteSize = sf::Vector2i(64,64);
-    currentFrame = 0;
-    animationTimer = 0.0f;
-    animationSpeed = 150.0f;
-    frameCount = 8;
+    sprite.setTexture(texture);
+    // max x: 8, y: 3
+    int spriteXIndex = 0;
+    int spriteYIndex = 2;
 
-    //heart
-    maxHealth = 3;
-    currentHealth = maxHealth;
-    takeDamageCooldownTimer = 0;
-    takeDamageCooldown = 1000;
+    sprite.scale(sf::Vector2f(0.25f,0.25f));  //tile_size/aktualny rozmiar 64px
+    boundingBox.setSize(sf::Vector2f(spriteSize.x * sprite.getScale().x,spriteSize.y * sprite.getScale().y));
 
+    sprite.setTextureRect(sf::IntRect(spriteXIndex * spriteSize.x, spriteYIndex * spriteSize.y, spriteSize.x, spriteSize.y));
+    sprite.setPosition(sf::Vector2f(40,40));
 
+    for (int i = 0; i < maxHealth; i++) {
+        sf::Sprite heart(heartTexture);
+        hearts.push_back(heart);
+    }
 }
 
 void Player::Load(){
@@ -44,23 +55,6 @@ void Player::Load(){
     if (!heartTexture.loadFromFile("../Assets/UI/heart32x32.png")) {
         std::cerr << "Failed to load heart" << std::endl;
     }
-
-    sprite.setTexture(texture);
-
-    for (int i = 0; i < maxHealth; i++) {
-        sf::Sprite heart(heartTexture);
-        hearts.push_back(heart);
-    }
-
-    // max x: 8, y: 3
-    int spriteXIndex = 0;
-    int spriteYIndex = 2;
-
-    sprite.scale(sf::Vector2f(0.25f,0.25f));  //tile_size/aktualny rozmiar 64px
-    boundingBox.setSize(sf::Vector2f(spriteSize.x * sprite.getScale().x,spriteSize.y * sprite.getScale().y));
-
-    sprite.setTextureRect(sf::IntRect(spriteXIndex * spriteSize.x, spriteYIndex * spriteSize.y, spriteSize.x, spriteSize.y));
-    sprite.setPosition(sf::Vector2f(40,40));
 }
 
 
@@ -208,16 +202,15 @@ void Player::HandleShooting(const float& deltaTime) {
 
 void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies) {
     for (auto& bullet : bullets) {
-        if (!bullet->IsAlive()) continue;  // Pomijaj martwe pociski
+        if (!bullet->IsAlive()) continue;
 
         bullet->Update(deltaTime);
 
         for (auto& enemy : enemies) {
-            // Sprawdzenie kolizji z martwym wrogiem
             if (bullet->CheckCollision(enemy->GetSprite()) && enemy->IsAlive()) {
                 enemy->TakeDamage(bullet->GetDamage());
-                bullet->SetInactive();  // Oznacz pocisk jako nieaktywny
-                break;  // Przerwij, jeśli pocisk trafił w wroga
+                bullet->SetInactive();
+                break;
             }
         }
     }

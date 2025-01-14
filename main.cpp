@@ -11,22 +11,19 @@ auto main() -> int {
     sf::RenderWindow window(sf::VideoMode(desktopMode.width * 0.8, desktopMode.height * 0.8), "Game2D", sf::Style::Default, sf::ContextSettings(0, 0, 8));
     window.setFramerateLimit(180);
 
-    Room room = Room(13,7,32,Difficulty::Easy);
-    Player player;
     FrameRate frameRate;
+    Player player;
+    Room room = Room(13,7,32,Difficulty::Easy);
 
-    int roomWidthPx = room.GetRoomWidthPX();
-    int roomHeightPx = room.GetRoomHeightPX();
-
-    sf::View view(sf::FloatRect(0, 0, roomWidthPx, roomHeightPx));
+    sf::View view(sf::FloatRect(0, 0, room.GetRoomWidthPX(), room.GetRoomHeightPX()));
     window.setView(view);
-
-    room.Initialize();
-    frameRate.Initialize();
-    player.Initialize(room);
 
     frameRate.Load();
     player.Load();
+
+    frameRate.Initialize();
+    room.Initialize();
+    player.Initialize(room);
 
     sf::Clock clock;
     while (window.isOpen()){
@@ -46,9 +43,9 @@ auto main() -> int {
 
         window.clear(sf::Color::Black);
 
+        frameRate.Draw(window);
         room.Draw(window);
         player.Draw(window, view);
-        frameRate.Draw(window);
 
         window.display();
     }
