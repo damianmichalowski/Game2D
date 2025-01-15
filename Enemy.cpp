@@ -19,7 +19,6 @@ void Enemy::Initialize() {
     visionBox.setFillColor(sf::Color::Transparent);
 
     size = sf::Vector2i(64, 64);
-    sprite.setTexture(texture);
 
     int spriteXIndex = 0;
     int spriteYIndex = 2;
@@ -30,21 +29,16 @@ void Enemy::Initialize() {
 
     sprite.setTextureRect(sf::IntRect(spriteXIndex * size.x, spriteYIndex * size.y, size.x, size.y));
     sprite.setPosition(sf::Vector2f(posX, posY));
+
     healthText.setPosition(sprite.getPosition());
+    healthText.setFont(font);
+    healthText.setString(std::to_string(health));
+    healthText.setScale(0.6f, 0.6f);
 }
 
 void Enemy::Load() {
-    if (font.loadFromFile("../Assets/Fonts/Oswald-Regular.ttf")) {
-        std::cout << "Font in Skeleton loaded" << std::endl;
-        healthText.setFont(font);
-        healthText.setString(std::to_string(health));
-        healthText.setScale(0.6f, 0.6f);
-    } else {
-        std::cerr << "Failed to load Oswald font in Skeleton." << std::endl;
-    }
-
-    if (!texture.loadFromFile("../Assets/Skeleton/Textures/BODY_skeleton.png")) {
-        std::cerr << "Failed to load skeleton.png" << std::endl;
+    if (!font.loadFromFile("../Assets/Fonts/Oswald-Regular.ttf")) {
+        std::cout << "Failed to load Oswald font in Enemy." << std::endl;
     }
 }
 

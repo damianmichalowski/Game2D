@@ -12,13 +12,14 @@ auto main() -> int {
     window.setFramerateLimit(180);
 
     FrameRate frameRate;
-    Player player;
     Room room = Room(13,7,32,Difficulty::Easy);
+    Player player;
 
     sf::View view(sf::FloatRect(0, 0, room.GetRoomWidthPX(), room.GetRoomHeightPX()));
     window.setView(view);
 
     frameRate.Load();
+    room.Load();
     player.Load();
 
     frameRate.Initialize();

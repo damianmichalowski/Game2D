@@ -8,14 +8,12 @@ FrameRate::~FrameRate() {
 }
 
 void FrameRate::Initialize() {
+    frameRateText.setFont(font);
 }
 
 void FrameRate::Load() {
-    if (font.loadFromFile("../Assets/Fonts/Oswald-Regular.ttf")) {
-        std::cout << "Font loaded" << std::endl;
-        frameRateText.setFont(font);
-    } else {
-        std::cerr << "Failed to load Oswald font." << std::endl;
+    if (!font.loadFromFile("../Assets/Fonts/Oswald-Regular.ttf")) {
+        std::cout << "Failed to load Font Oswald in frameRate" << std::endl;
     }
 }
 

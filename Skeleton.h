@@ -9,6 +9,8 @@ private:
 public:
     Skeleton(float x, float y) : Enemy(x, y) {
     }
+
+    void Load() override;
 };
 
 #endif // SKELETON_H

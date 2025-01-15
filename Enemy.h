@@ -6,7 +6,7 @@
 class Player;
 
 class Enemy {
-private:
+protected:
     sf::Sprite sprite;
     sf::Texture texture;
     float posX, posY;

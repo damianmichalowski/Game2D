@@ -35,5 +35,7 @@ add_executable(gameCpp main.cpp
         Animate.cpp
         Animate.h
         Difficulty.h
+        Globals.cpp
+        Globals.h
 )
 target_link_libraries(gameCpp sfml-graphics)

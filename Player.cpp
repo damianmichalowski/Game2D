@@ -5,7 +5,7 @@
 
 Player::Player() :
 playerSpeed(0.1f),
-maxFireRate(600),
+maxFireRate(100),
 fireRateTimer(0),
 immortal(false),
 direction(0.0f, 0.0f),
@@ -92,10 +92,55 @@ void Player::Draw(sf::RenderWindow& window, sf::View& view) {
     window.draw(boundingBox);
 }
 
+// void Player::HandleMovement(float& deltaTime) {
+//     direction.x = 0.0f;
+//     direction.y = 0.0f;
+//
+//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+//         direction.x += 1.0f;
+//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+//         direction.x -= 1.0f;
+//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+//         direction.y -= 1.0f;
+//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+//         direction.y += 1.0f;
+//
+//     if (direction.x != 0.0f && direction.y != 0.0f)
+//         direction /= std::sqrt(2.0f);
+//
+//     sf::Vector2f position = sprite.getPosition();
+//
+//     position += direction * playerSpeed * deltaTime;
+//
+//     //walls collision
+//     if (position.x < currentRoom->GetTileSize() ||
+//     position.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() ||
+//     position.y < currentRoom->GetTileSize() ||
+//     position.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - currentRoom->GetTileSize()) {
+//         return;
+//     }
+//
+//     //obstacles collision
+//     for (const auto& obstacle : currentRoom->GetObstacles()) {
+//         sf::FloatRect obstacleRect(obstacle.x * currentRoom->GetTileSize(), obstacle.y * currentRoom->GetTileSize(), currentRoom->GetTileSize(), currentRoom->GetTileSize());
+//         sf::FloatRect newPositionRect(position.x, position.y, sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
+//
+//         if (newPositionRect.intersects(obstacleRect)) {
+//             std::cout << "Obstacle collided" << std::endl;
+//             TakeDamage(1);
+//         }
+//     }
+//
+//     sprite.setPosition(position);
+//
+//     HandleAnimation(deltaTime, direction);
+// }
+
 void Player::HandleMovement(float& deltaTime) {
     direction.x = 0.0f;
     direction.y = 0.0f;
 
+    // Obsługa klawiszy ruchu
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         direction.x += 1.0f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -105,23 +150,50 @@ void Player::HandleMovement(float& deltaTime) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         direction.y += 1.0f;
 
+    // Normalizacja ruchu diagonalnego
     if (direction.x != 0.0f && direction.y != 0.0f)
         direction /= std::sqrt(2.0f);
 
     sf::Vector2f position = sprite.getPosition();
 
-    position += direction * playerSpeed * deltaTime;
+    // Ruch w osi X
+    sf::Vector2f newPositionX = position;
+    newPositionX.x += direction.x * playerSpeed * deltaTime;
+    if (!CheckCollision(newPositionX)) {
+        position.x = newPositionX.x;
+    }
 
-    if (position.x < currentRoom->GetTileSize() ||
-    position.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() ||
-    position.y < currentRoom->GetTileSize() ||
-    position.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - currentRoom->GetTileSize()) {
-        return;
+    // Ruch w osi Y
+    sf::Vector2f newPositionY = position;
+    newPositionY.y += direction.y * playerSpeed * deltaTime;
+    if (!CheckCollision(newPositionY)) {
+        position.y = newPositionY.y;
     }
 
     sprite.setPosition(position);
 
     HandleAnimation(deltaTime, direction);
+}
+
+bool Player::CheckCollision(const sf::Vector2f& newPosition) {
+    // Sprawdzenie kolizji ze ścianami
+    if (newPosition.x < currentRoom->GetTileSize() ||
+        newPosition.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() ||
+        newPosition.y < currentRoom->GetTileSize() ||
+        newPosition.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - currentRoom->GetTileSize()) {
+        return true;
+    }
+
+    // Sprawdzenie kolizji z przeszkodami
+    for (const auto& obstacle : currentRoom->GetObstacles()) {
+        sf::FloatRect obstacleRect(obstacle.x * currentRoom->GetTileSize(), obstacle.y * currentRoom->GetTileSize(), currentRoom->GetTileSize(), currentRoom->GetTileSize());
+        sf::FloatRect playerRect(newPosition.x, newPosition.y, sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
+
+        if (playerRect.intersects(obstacleRect)) {
+            TakeDamage(1);
+        }
+    }
+    return false;
 }
 
 void Player::HandleAnimation(float& deltaTime, sf::Vector2f& direction) {
@@ -141,16 +213,6 @@ void Player::HandleAnimation(float& deltaTime, sf::Vector2f& direction) {
         sprite.setTextureRect(sf::IntRect(currentFrame * spriteSize.x, row * spriteSize.y, spriteSize.x, spriteSize.y));
     } else {
         sprite.setTextureRect(sf::IntRect(0, 2 * spriteSize.y, spriteSize.x, spriteSize.y));
-    }
-}
-
-void Player::HandleObstacles(sf::Vector2f& newPosition) {
-
-    if (newPosition.x >= currentRoom->GetTileSize() &&
-        newPosition.x + sprite.getPosition().x <= currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() &&
-        newPosition.y >= currentRoom->GetTileSize() &&
-        newPosition.y + sprite.getPosition().y <= currentRoom->GetTileSize() - currentRoom->GetTileSize()) {
-            sprite.setPosition(direction);
     }
 }
 
@@ -182,24 +244,6 @@ void Player::HandleShooting(const float& deltaTime) {
     }
 }
 
-// void Player::CheckBulletCollisions(const float& deltaTime, Enemy& skeleton) {
-//     bullets.erase(std::remove_if(bullets.begin(), bullets.end(), [&](Bullet& bullet) {
-//         bullet.Update(deltaTime);
-//
-//         if(!bullet.IsAlive()) {
-//             return true;
-//         }
-//
-//         if (skeleton.IsAlive() && Math::CheckCollision(bullet.GetGlobalBounds(), skeleton.GetGlobalBounds())) {
-//             std::cout << "collision" << std::endl;
-//             skeleton.TakeDamage(-bullet.GetDamage());
-//             return true;
-//         }
-//
-//         return false;
-//     }), bullets.end());
-// }
-
 void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies) {
     for (auto& bullet : bullets) {
         if (!bullet->IsAlive()) continue;
@@ -215,21 +259,20 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
         }
     }
 
-    // Usuń nieaktywne pociski
     bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
-                                 [](Bullet* bullet) {
-                                     bool toRemove = !bullet->IsAlive();
-                                     if (toRemove) delete bullet;  // Usuń z pamięci
-                                     return toRemove;
-                                 }),
-                  bullets.end());
+     [](Bullet* bullet) {
+         bool toRemove = !bullet->IsAlive();
+         if (toRemove) delete bullet;  // Usuń z pamięci
+         return toRemove;
+     }),
+    bullets.end());
 }
 
 
 
-void Player::TakeDamage(int heartsTaken) {
+void Player::TakeDamage(int damage) {
     if (!immortal) {
-        currentHealth -= heartsTaken;
+        currentHealth -= damage;
         immortal = true;
     }
 }
