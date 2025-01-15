@@ -88,13 +88,13 @@ void Room::Draw(sf::RenderWindow &window) {
         enemy->Draw(window);
     }
 
+    window.draw(doorClosedSprite);  // Drzwi zamknięte
+    window.draw(doorDieSprite);
+    window.draw(doorDickSprite);
+    window.draw(doorHeartSprite);
+
     if (isCleared) {
         window.draw(doorOpenSprite);  // Drzwi otwarte
-    } else {
-        window.draw(doorClosedSprite);  // Drzwi zamknięte
-        window.draw(doorDieSprite);
-        window.draw(doorDickSprite);
-        window.draw(doorHeartSprite);
     }
 }
 
@@ -251,7 +251,37 @@ void Room::IsCleared() {
     }
 
     if (isCleared) {
+        OpenRandomDoor();
         std::cout << "Cleared!" << std::endl;
+    }
+}
+
+void Room::OpenRandomDoor() {
+    int randomDoor = std::rand() % 4;
+    sf::FloatRect openDoorBounds = doorOpenSprite.getLocalBounds();
+
+    doorOpenSprite.setOrigin(0, 0);
+    doorOpenSprite.setRotation(0);
+
+    switch (randomDoor) {
+        case 0: // Top
+            doorOpenSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
+            break;
+        case 1: // Bottom
+            doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
+            doorOpenSprite.setPosition((doorBottom.x + 0.5f) * TILE_SIZE, (doorBottom.y + 0.5f) * TILE_SIZE);
+            doorOpenSprite.setRotation(180);
+        break;
+        case 2: // Left
+            doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
+            doorOpenSprite.setPosition((doorLeft.x + 0.5f) * TILE_SIZE, (doorLeft.y + 0.5f) * TILE_SIZE);
+            doorOpenSprite.setRotation(270);
+            break;
+        case 3: // Right
+            doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
+            doorOpenSprite.setPosition((doorRight.x + 0.5f) * TILE_SIZE, (doorRight.y + 0.5f) * TILE_SIZE);
+            doorOpenSprite.setRotation(90);
+            break;
     }
 }
 

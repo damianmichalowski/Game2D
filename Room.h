@@ -54,6 +54,7 @@ public:
     void GenerateTiles();
     void GenerateEnemies(Difficulty difficulty);
     void IsCleared();
+    void OpenRandomDoor();
     void HandleFireAnimation(const float &deltaTime);
 
     int GetRoomWidthPX() const {

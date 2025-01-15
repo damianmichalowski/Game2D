@@ -3,7 +3,11 @@
 #include "Animate.h"
 #include "Math.h"
 
-Enemy::Enemy(const float x, const float y) : posX(x), posY(y), health(100), damage(1), speed(0.05f), isAlive(true), animationTimer(0.0f), animationSpeed(150.0f), currentFrame(0), frameCount(8) {}
+Enemy::Enemy(const float x, const float y)
+: posX(x), posY(y), health(100),
+damage(1), speed(0.05f), isAlive(true),
+animationTimer(0.0f), animationSpeed(150.0f), currentFrame(0), frameCount(8),
+inactiveTimer(0.0f), maxInactiveCooldown(1500){}
 
 Enemy::~Enemy() {
     std::cout << "Enemy destructed" << std::endl;
@@ -56,18 +60,22 @@ void Enemy::Update(float deltaTime, Player& player) {
 
     healthText.setPosition(sprite.getPosition());
 
-    bool isPlayerInVision = Math::CheckCollision(visionBox.getGlobalBounds(), player.GetSprite().getGlobalBounds());
+    inactiveTimer+=deltaTime;
+    if(inactiveTimer >= maxInactiveCooldown) {
+        bool isPlayerInVision = Math::CheckCollision(visionBox.getGlobalBounds(), player.GetSprite().getGlobalBounds());
 
-    if (isPlayerInVision) {
-        direction = player.GetSprite().getPosition() - sprite.getPosition();
-        direction = Math::NormalizeVector(direction);
+        if (isPlayerInVision) {
+            direction = player.GetSprite().getPosition() - sprite.getPosition();
+            direction = Math::NormalizeVector(direction);
 
-        sprite.setPosition(sprite.getPosition() + direction * speed * deltaTime);
+            sprite.setPosition(sprite.getPosition() + direction * speed * deltaTime);
+        }
+
+        CheckIsPlayerCollision(sprite, player, player.IsImmortal());
+        HandleAnimation(deltaTime, isPlayerInVision);
     }
 
-    HandleAnimation(deltaTime, isPlayerInVision);
 
-    CheckIsPlayerCollision(sprite, player, player.IsImmortal());
 
 }
 

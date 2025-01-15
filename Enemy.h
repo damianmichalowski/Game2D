@@ -11,6 +11,8 @@ protected:
     sf::Texture texture;
     float posX, posY;
     sf::Vector2f direction;
+    float inactiveTimer;
+    float maxInactiveCooldown;
 
     sf::RectangleShape boundingBox;
     sf::RectangleShape visionBox;
