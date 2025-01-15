@@ -66,8 +66,17 @@ void Player::Update(float& deltaTime) {
 
     if (immortal) {
         takeDamageCooldownTimer += deltaTime;
+        if(takeDamageCooldownTimer >= takeDamageCooldown/3) {
+            sprite.setColor(originalColor);
+        }
+
+        if(takeDamageCooldownTimer >= takeDamageCooldown/2) {
+            sprite.setColor(sf::Color::Red);
+        }
+
         if (takeDamageCooldownTimer >= takeDamageCooldown) {
             immortal = false;
+            sprite.setColor(originalColor);
             takeDamageCooldownTimer = 0;
         }
     }
@@ -231,6 +240,9 @@ void Player::TakeDamage(int damage) {
     if (!immortal) {
         currentHealth -= damage;
         immortal = true;
+        damageTimer = 0.0f;  // Rozpocznij timer migotania
+        originalColor = sprite.getColor();
+        sprite.setColor(sf::Color::Red);
     }
 }
 

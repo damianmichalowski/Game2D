@@ -17,7 +17,6 @@ private:
     float fireRateTimer;
 
     float playerSpeed;
-    bool immortal;
     sf::Vector2f direction;
 
     sf::Sprite sprite;
@@ -32,12 +31,15 @@ private:
     int frameCount;
 
     //health
+    bool immortal;
     int maxHealth;
     int currentHealth;
     sf::Texture heartTexture;
     std::vector<sf::Sprite> hearts;
     float takeDamageCooldownTimer;
     float takeDamageCooldown;
+    float damageTimer;
+    sf::Color originalColor;
 
     Room* currentRoom;
 
