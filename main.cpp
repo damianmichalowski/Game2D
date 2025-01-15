@@ -22,7 +22,7 @@ auto main() -> int {
     room.Load();
     player.Load();
 
-    frameRate.Initialize();
+    frameRate.Initialize(view);
     room.Initialize();
     player.Initialize(room);
 
@@ -44,9 +44,9 @@ auto main() -> int {
 
         window.clear(sf::Color::Black);
 
-        frameRate.Draw(window);
         room.Draw(window);
         player.Draw(window, view);
+        frameRate.Draw(window);
 
         window.display();
     }

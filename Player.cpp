@@ -43,6 +43,7 @@ void Player::Initialize(Room& room) {
 
     for (int i = 0; i < maxHealth; i++) {
         sf::Sprite heart(heartTexture);
+        heart.scale(sf::Vector2f(0.3f,0.3f));
         hearts.push_back(heart);
     }
 }
@@ -82,7 +83,7 @@ void Player::Draw(sf::RenderWindow& window, sf::View& view) {
     float windowHeight = view.getSize().y;
     float heartYPosition = windowHeight - 50;
     for (int i = 0; i < hearts.size(); ++i) {
-        hearts[i].setPosition(sf::Vector2f(10 + i * 40, heartYPosition));
+        hearts[i].setPosition(sf::Vector2f(32 + i * 12, 5));
     }
 
     for (int i = 0; i < currentHealth; i++) {
@@ -91,50 +92,6 @@ void Player::Draw(sf::RenderWindow& window, sf::View& view) {
 
     window.draw(boundingBox);
 }
-
-// void Player::HandleMovement(float& deltaTime) {
-//     direction.x = 0.0f;
-//     direction.y = 0.0f;
-//
-//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-//         direction.x += 1.0f;
-//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-//         direction.x -= 1.0f;
-//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-//         direction.y -= 1.0f;
-//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-//         direction.y += 1.0f;
-//
-//     if (direction.x != 0.0f && direction.y != 0.0f)
-//         direction /= std::sqrt(2.0f);
-//
-//     sf::Vector2f position = sprite.getPosition();
-//
-//     position += direction * playerSpeed * deltaTime;
-//
-//     //walls collision
-//     if (position.x < currentRoom->GetTileSize() ||
-//     position.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() ||
-//     position.y < currentRoom->GetTileSize() ||
-//     position.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - currentRoom->GetTileSize()) {
-//         return;
-//     }
-//
-//     //obstacles collision
-//     for (const auto& obstacle : currentRoom->GetObstacles()) {
-//         sf::FloatRect obstacleRect(obstacle.x * currentRoom->GetTileSize(), obstacle.y * currentRoom->GetTileSize(), currentRoom->GetTileSize(), currentRoom->GetTileSize());
-//         sf::FloatRect newPositionRect(position.x, position.y, sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
-//
-//         if (newPositionRect.intersects(obstacleRect)) {
-//             std::cout << "Obstacle collided" << std::endl;
-//             TakeDamage(1);
-//         }
-//     }
-//
-//     sprite.setPosition(position);
-//
-//     HandleAnimation(deltaTime, direction);
-// }
 
 void Player::HandleMovement(float& deltaTime) {
     direction.x = 0.0f;

@@ -7,12 +7,15 @@ FrameRate::FrameRate() : timer(0) {
 FrameRate::~FrameRate() {
 }
 
-void FrameRate::Initialize() {
+void FrameRate::Initialize(sf::View &view) {
     frameRateText.setFont(font);
+    frameRateText.setCharacterSize(9);
+    frameRateText.setFillColor(sf::Color::Green);
+    frameRateText.setPosition(view.getSize().x - 28, 2);
 }
 
 void FrameRate::Load() {
-    if (!font.loadFromFile("../Assets/Fonts/Oswald-Regular.ttf")) {
+    if (!font.loadFromFile("../Assets/Fonts/Oswald-ExtraLight.ttf")) {
         std::cout << "Failed to load Font Oswald in frameRate" << std::endl;
     }
 }
@@ -22,7 +25,7 @@ void FrameRate::Update(float deltaTime) {
 
     if(timer >= 100.0) {
         float fps = 1000.0;
-        frameRateText.setString("FPS: " + std::to_string((int)(fps / deltaTime)) + " Frame Time: " + std::to_string((int)deltaTime));
+        frameRateText.setString("fps: " + std::to_string((int)(fps / deltaTime)) + "\ntick: " + std::to_string((int)deltaTime));
         timer = 0;
     }
 }

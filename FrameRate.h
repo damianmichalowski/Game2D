@@ -13,7 +13,7 @@ public:
     FrameRate();
     ~FrameRate();
 
-    void Initialize();
+    void Initialize(sf::View &view);
     void Load();
     void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
