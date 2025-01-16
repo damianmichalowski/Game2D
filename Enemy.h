@@ -2,8 +2,10 @@
 #define ENEMY_H
 #include <SFML/Graphics.hpp>
 #include "Player.h"
+#include "Room.h"
 
 class Player;
+class Room;
 
 class Enemy {
 protected:
@@ -32,14 +34,21 @@ protected:
     int currentFrame;
     int frameCount;
 
+    Room* currentRoom;
+
 public:
     Enemy(float x, float y);
     ~Enemy();
-    virtual void Initialize();
+    virtual void Initialize(Room& room);
     virtual void Load();
     virtual void Update(float deltaTime, Player& player);
     virtual void Draw(sf::RenderWindow& window);
     virtual void HandleAnimation(float deltaTime, bool isPlayerInVision);
+    void HandleMovement(float deltaTime, Player& player);
+    bool CheckCollision(const sf::Vector2f& newPosition);
+    void SetCurrentRoom(Room& room);
+
+
     virtual void CheckIsPlayerCollision(Player &player, bool isImmortal);
     // virtual void Attack();
     // virtual void Die();

@@ -5,20 +5,25 @@
 class Bullet {
 private:
     sf::RectangleShape bulletShape;
+    sf::Sprite sprite;
+    sf::Texture texture;
     sf::Vector2f direction;
     float speed;
     bool isAlive;
-    float lifeTime;
+    float aliveTimer;
     float maxAliveTime;
     float damage;
+    sf::IntRect frameRect;
+    sf::Clock animationClock;
 
 public:
     Bullet();
     ~Bullet();
 
-    void Initialize(const sf::Vector2f &position, sf::Vector2f &direction, float speed, float lifeTime);
+    void Initialize(const sf::Vector2f &position, sf::Vector2f &direction);
     void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
+    void AnimateBullet();
     bool CheckCollision(const sf::RectangleShape& target) const;
     float GetDamage() const;
     void SetAlive(bool isAlive);

@@ -13,7 +13,7 @@ Enemy::~Enemy() {
     std::cout << "Enemy destructed" << std::endl;
 }
 
-void Enemy::Initialize() {
+void Enemy::Initialize(Room& room) {
     hitBox.setSize(sf::Vector2f(20.f, 20.f));
     hitBox.setPosition(sf::Vector2f(posX, posY));
     hitBox.setFillColor(sf::Color::Transparent);
@@ -44,6 +44,8 @@ void Enemy::Initialize() {
     healthText.setString(std::to_string(health));
     healthText.setScale(0.25f, 0.25f);
     healthText.setPosition(sf::Vector2f(hitBox.getPosition().x + 3, hitBox.getPosition().y - 16.f));
+
+    SetCurrentRoom(room);
 }
 
 void Enemy::Load() {
@@ -65,14 +67,10 @@ void Enemy::Update(float deltaTime, Player& player) {
 
     inactiveTimer+=deltaTime;
     if(inactiveTimer >= maxInactiveCooldown) {
-        //todo zamienic na po prostu intersect
-        bool isPlayerInVision = Math::CheckCollision(visionBox.getGlobalBounds(), player.GetHitBox().getGlobalBounds());
+        bool isPlayerInVision = visionBox.getGlobalBounds().intersects(player.GetHitBox().getGlobalBounds());
 
         if (isPlayerInVision) {
-            direction = player.GetHitBox().getPosition() - hitBox.getPosition();
-            direction = Math::NormalizeVector(direction);
-
-            hitBox.setPosition(hitBox.getPosition() + direction * speed * deltaTime);
+            HandleMovement(deltaTime, player);
         }
 
         CheckIsPlayerCollision(player, player.IsImmortal());
@@ -87,6 +85,55 @@ void Enemy::Draw(sf::RenderWindow& window) {
         window.draw(visionBox);
         window.draw(healthText);
     }
+}
+
+void Enemy::HandleMovement(float deltaTime, Player& player) {
+    direction = player.GetHitBox().getPosition() - hitBox.getPosition();
+    direction = Math::NormalizeVector(direction);
+
+    sf::Vector2f position = hitBox.getPosition();
+
+    // X
+    sf::Vector2f newPositionX = position;
+    newPositionX.x += direction.x * speed * deltaTime;
+    if (!CheckCollision(newPositionX)) {
+        position.x = newPositionX.x;
+    }
+
+    //Y
+    sf::Vector2f newPositionY = position;
+    newPositionY.y += direction.y * speed * deltaTime;
+    if (!CheckCollision(newPositionY)) {
+        position.y = newPositionY.y;
+    }
+
+    hitBox.setPosition(position);
+    sprite.setPosition(hitBox.getPosition());
+}
+
+bool Enemy::CheckCollision(const sf::Vector2f& newPosition) {
+    // Wall collision
+    if (newPosition.x < 32 ||
+        newPosition.x + hitBox.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - 32 ||
+        newPosition.y < 32 ||
+        newPosition.y + hitBox.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - 32) {
+        return true;
+    }
+
+    // Obstacle collison
+    for (const auto& obstacle : currentRoom->GetObstacles()) {
+        sf::FloatRect obstacleRect(obstacle.x * 32, obstacle.y * 32, 32, 32);
+        sf::FloatRect enemyRect(newPosition.x, newPosition.y, hitBox.getGlobalBounds().width, hitBox.getGlobalBounds().height);
+
+        if (enemyRect.intersects(obstacleRect)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Enemy::SetCurrentRoom(Room& room) {
+    currentRoom = &room;
 }
 
 void Enemy::CheckIsPlayerCollision(Player& player, bool isImmortal) {

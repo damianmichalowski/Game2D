@@ -243,7 +243,7 @@ void Room::GenerateEnemies(Difficulty difficulty) {
 
         Skeleton* enemy = new Skeleton(spawnPosition.x * TILE_SIZE, spawnPosition.y * TILE_SIZE);
         enemy->Load();
-        enemy->Initialize();
+        enemy->Initialize(std::ref(*this));
         enemies.push_back(enemy);
     }
 }

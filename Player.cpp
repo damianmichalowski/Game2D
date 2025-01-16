@@ -5,7 +5,7 @@
 
 Player::Player() :
 playerSpeed(0.1f),
-maxFireRate(100),
+maxFireRate(360),
 fireRateTimer(0),
 immortal(false),
 direction(0.0f, 0.0f),
@@ -202,7 +202,7 @@ void Player::HandleShooting(const float& deltaTime) {
 
         if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
-            bullet->Initialize(GetCenterHitBox(), shootingDirection, 0.2f, 600);
+            bullet->Initialize(GetCenterHitBox(), shootingDirection);
             bullets.push_back(bullet);
             fireRateTimer = 0;
         }
