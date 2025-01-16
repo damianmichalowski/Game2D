@@ -185,7 +185,7 @@ void Player::HandleShooting(const float& deltaTime) {
     fireRateTimer += deltaTime;
 
     if (fireRateTimer >= maxFireRate) {
-        sf::Vector2f shootingDirection(0.0f,0.0f);
+        shootingDirection = sf::Vector2f(0.0f,0.0f);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
             shootingDirection.x += 1.0f;
@@ -202,7 +202,7 @@ void Player::HandleShooting(const float& deltaTime) {
 
         if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
-            bullet->Initialize(GetCenterHitBox(), shootingDirection);
+            bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection);
             bullets.push_back(bullet);
             fireRateTimer = 0;
         }
@@ -223,6 +223,7 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
             }
         }
 
+        //obstacles collision
         for (const auto& obstacle : obstacles) {
             sf::RectangleShape obstacleRect;
             obstacleRect.setSize(sf::Vector2f(32, 32));
@@ -235,6 +236,7 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
             }
         }
 
+        //walls collision
         for (const auto& tile : tiles) {
             if (currentRoom->IsWallTile(tile.getPosition().x, tile.getPosition().y)) {
                 if(bullet->CheckCollision(tile)) {
@@ -272,16 +274,14 @@ void Player::SetCurrentRoom(Room& room) {
 }
 
 sf::Vector2f Player::GetCenterHitBox() const {
-    sf::Vector2f position = hitBox.getPosition();
     sf::FloatRect bounds = hitBox.getGlobalBounds();
-    sf::Vector2f center(position.x + bounds.width / 2.f, position.y + bounds.height / 2.f);
+    sf::Vector2f center(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
     return center;
 }
 
 sf::Vector2f Player::GetCenterSprite() const {
-    sf::Vector2f position = sprite.getPosition();
     sf::FloatRect bounds = sprite.getGlobalBounds();
-    sf::Vector2f center(position.x + bounds.width / 2.f, position.y + bounds.height / 2.f);
+    sf::Vector2f center(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
     return center;
 }
 

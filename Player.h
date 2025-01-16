@@ -17,7 +17,7 @@ private:
     sf::Vector2i size;
 
     std::vector<Bullet*> bullets;
-
+    sf::Vector2f shootingDirection;
     float maxFireRate;
     float fireRateTimer;
 
