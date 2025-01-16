@@ -12,7 +12,6 @@ private:
     float maxAliveTime;
     float damage;
 
-
 public:
     Bullet();
     ~Bullet();
@@ -22,14 +21,12 @@ public:
     void Draw(sf::RenderWindow& window);
     bool CheckCollision(const sf::Sprite& target) const;
     float GetDamage() const;
-    void SetInactive();
+    void SetAlive(bool isAlive);
     bool IsAlive() const;
 
     sf::FloatRect GetGlobalBounds() {
         return bulletShape.getGlobalBounds();
     };
 };
-
-
 
 #endif //BULLET_H

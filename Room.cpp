@@ -4,6 +4,7 @@
 #include <ctime>
 #include <iostream>
 
+#include "Dungeon.h"
 #include "Skeleton.h"
 
 Room::Room()
@@ -11,8 +12,8 @@ Room::Room()
       NUM_OBSTACLES(4), difficult(Difficulty::Easy) {
 }
 
-Room::Room(int width, int height, int size, Difficulty difficulty)
-        : TILE_SIZE(32), ROOM_WIDTH(width), ROOM_HEIGHT(height),
+Room::Room(Difficulty difficulty)
+        : TILE_SIZE(32), ROOM_WIDTH(13), ROOM_HEIGHT(7),
           NUM_OBSTACLES(4), difficult(difficulty) {
 }
 
@@ -66,11 +67,14 @@ void Room::Update(const float &deltaTime, Player& player) {
 
     player.CheckBulletCollisions(deltaTime, enemies);
 
-    if(!isCleared) {
-        IsCleared();
+    if (IsRoomCleared() && !isCleared) {
+        std::cout << "Cleared!" << std::endl;
+        OpenRandomDoor();
+        isCleared = true;
     }
 
     HandleFireAnimation(deltaTime);
+    ClearDeadEnemies();
 }
 
 void Room::Draw(sf::RenderWindow &window) {
@@ -88,13 +92,16 @@ void Room::Draw(sf::RenderWindow &window) {
         enemy->Draw(window);
     }
 
-    window.draw(doorClosedSprite);  // Drzwi zamknięte
+    window.draw(doorClosedSprite);
     window.draw(doorDieSprite);
     window.draw(doorDickSprite);
     window.draw(doorHeartSprite);
 
     if (isCleared) {
-        window.draw(doorOpenSprite);  // Drzwi otwarte
+        window.draw(doorOpenSprite);
+        if(Globals::IsDebugMode()) {
+            window.draw(openDoorRect);
+        }
     }
 }
 
@@ -104,7 +111,6 @@ void Room::InitializeDoors() {
     doorLeft = sf::Vector2i(0, ROOM_HEIGHT / 2);
     doorRight = sf::Vector2i(ROOM_WIDTH - 1, ROOM_HEIGHT / 2);
 
-    // Drzwi górne (bez rotacji)
     doorOpenSprite.setTexture(doorOpenTexture);
     doorOpenSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
 
@@ -167,6 +173,8 @@ bool Room::IsObstacleTile(int x, int y) const {
 }
 
 void Room::GenerateTiles() {
+    tiles.clear();
+
     for (int y = 0; y < ROOM_HEIGHT; ++y) {
         for (int x = 0; x < ROOM_WIDTH; ++x) {
             sf::RectangleShape tile(sf::Vector2f(TILE_SIZE, TILE_SIZE));
@@ -202,15 +210,15 @@ void Room::GenerateEnemies(Difficulty difficulty) {
     if (difficulty == Difficulty::Easy) {
         enemiesCount = 2;
     } else if (difficulty == Difficulty::Medium) {
-        enemiesCount = 5;
+        enemiesCount = 4;
     } else if (difficulty == Difficulty::Hard) {
-        enemiesCount = 8;
+        enemiesCount = 6;
     }
 
     std::vector<sf::Vector2i> availablePositions;
 
-    for (int y = 1; y < ROOM_HEIGHT - 1; ++y) {
-        for (int x = 1; x < ROOM_WIDTH - 1; ++x) {
+    for (int y = 2; y < ROOM_HEIGHT - 2; ++y) {
+        for (int x = 2; x < ROOM_WIDTH - 2; ++x) {
 
             bool isOccupied = false;
             for (const auto& obstacle : obstacles) {
@@ -240,20 +248,13 @@ void Room::GenerateEnemies(Difficulty difficulty) {
     }
 }
 
-void Room::IsCleared() {
-    isCleared = true;  // Zakładamy, że pokój jest oczyszczony
-
+bool Room::IsRoomCleared() const {
     for (auto& enemy : enemies) {
         if (enemy->IsAlive()) {
-            isCleared = false;  // Znaleziono żywego przeciwnika, więc pokój nie jest oczyszczony
-            break;
+            return false;
         }
     }
-
-    if (isCleared) {
-        OpenRandomDoor();
-        std::cout << "Cleared!" << std::endl;
-    }
+    return true;
 }
 
 void Room::OpenRandomDoor() {
@@ -265,35 +266,67 @@ void Room::OpenRandomDoor() {
 
     switch (randomDoor) {
         case 0: // Top
+            openedDoor = doorTop;
             doorOpenSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
             break;
         case 1: // Bottom
+            openedDoor = doorBottom;
             doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
             doorOpenSprite.setPosition((doorBottom.x + 0.5f) * TILE_SIZE, (doorBottom.y + 0.5f) * TILE_SIZE);
             doorOpenSprite.setRotation(180);
         break;
         case 2: // Left
+            openedDoor = doorLeft;
             doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
             doorOpenSprite.setPosition((doorLeft.x + 0.5f) * TILE_SIZE, (doorLeft.y + 0.5f) * TILE_SIZE);
             doorOpenSprite.setRotation(270);
             break;
         case 3: // Right
+            openedDoor = doorRight;
             doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
             doorOpenSprite.setPosition((doorRight.x + 0.5f) * TILE_SIZE, (doorRight.y + 0.5f) * TILE_SIZE);
             doorOpenSprite.setRotation(90);
             break;
     }
+
+    std::cout << "opened door posX: " << openedDoor.x << std::endl;
+    std::cout << "opened door posY: " << openedDoor.y << std::endl;
+
+    openDoorRect = sf::RectangleShape(sf::Vector2f(TILE_SIZE + 1, TILE_SIZE + 1));
+
+    openDoorRect.setPosition(openedDoor.x * TILE_SIZE ,openedDoor.y * TILE_SIZE);
+    openDoorRect.setOutlineThickness(1);
+
+    if(Globals::IsDebugMode()) {
+        openDoorRect.setOutlineColor(sf::Color::Green);
+    }
 }
+
+bool Room::IsPlayerEnterNewRoom(Player& player) const {
+    if(player.GetGlobalBounds().intersects(openDoorRect.getGlobalBounds())) {
+        return true;
+    }
+    return false;
+};
 
 void Room::HandleFireAnimation(const float &deltaTime) {
     animationTimer += deltaTime;
     if (animationTimer >= animationDuration) {
-        animationTimer = 0.f;  // Resetowanie timera
-        currentFrame = (currentFrame + 1) % 8;  // Zmieniamy klatkę (8 klatek w cyklu)
+        animationTimer = 0.f;
+        currentFrame = (currentFrame + 1) % 8;
 
-        // Ustawienie nowej klatki dla każdego sprite'a ognia
         for (auto& fireSprite : fireSprites) {
-            fireSprite.setTextureRect(sf::IntRect(currentFrame * 24, 0, 24, 32));  // Zmiana klatki
+            fireSprite.setTextureRect(sf::IntRect(currentFrame * 24, 0, 24, 32));
         }
     }
-};
+}
+
+void Room::ClearDeadEnemies() {
+    enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
+    [](Enemy* enemy) {
+        bool toRemove = !enemy->IsAlive();
+        if (toRemove) delete enemy;
+        return toRemove;
+    }),
+   enemies.end());
+}

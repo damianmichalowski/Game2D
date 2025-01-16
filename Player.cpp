@@ -15,7 +15,7 @@ animationSpeed(150.0f),
 frameCount(8),
 maxHealth(3),
 takeDamageCooldownTimer(0),
-takeDamageCooldown(1000){
+takeDamageCooldown(1000) {
 }
 
 Player::~Player() {
@@ -25,9 +25,12 @@ void Player::Initialize(Room& room) {
     currentRoom = &room;
     currentHealth = maxHealth;
 
-    boundingBox.setOutlineThickness(2);
-    boundingBox.setOutlineColor(sf::Color::Green);
     boundingBox.setFillColor(sf::Color::Transparent);
+
+    if(Globals::IsDebugMode()) {
+        boundingBox.setOutlineThickness(2);
+        boundingBox.setOutlineColor(sf::Color::Green);
+    }
 
     spriteSize = sf::Vector2i(64,64);
     sprite.setTexture(texture);
@@ -82,15 +85,12 @@ void Player::Update(float& deltaTime) {
     }
 }
 
-void Player::Draw(sf::RenderWindow& window, sf::View& view) {
+void Player::Draw(sf::RenderWindow& window) {
     window.draw(sprite);
     for (Bullet* bullet: bullets) {
         bullet->Draw(window);
     }
 
-    //halth
-    float windowHeight = view.getSize().y;
-    float heartYPosition = windowHeight - 50;
     for (int i = 0; i < hearts.size(); ++i) {
         hearts[i].setPosition(sf::Vector2f(32 + i * 12, 5));
     }
@@ -106,7 +106,6 @@ void Player::HandleMovement(float& deltaTime) {
     direction.x = 0.0f;
     direction.y = 0.0f;
 
-    // Obsługa klawiszy ruchu
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         direction.x += 1.0f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -116,20 +115,17 @@ void Player::HandleMovement(float& deltaTime) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         direction.y += 1.0f;
 
-    // Normalizacja ruchu diagonalnego
     if (direction.x != 0.0f && direction.y != 0.0f)
         direction /= std::sqrt(2.0f);
 
     sf::Vector2f position = sprite.getPosition();
 
-    // Ruch w osi X
     sf::Vector2f newPositionX = position;
     newPositionX.x += direction.x * playerSpeed * deltaTime;
     if (!CheckCollision(newPositionX)) {
         position.x = newPositionX.x;
     }
 
-    // Ruch w osi Y
     sf::Vector2f newPositionY = position;
     newPositionY.y += direction.y * playerSpeed * deltaTime;
     if (!CheckCollision(newPositionY)) {
@@ -137,22 +133,21 @@ void Player::HandleMovement(float& deltaTime) {
     }
 
     sprite.setPosition(position);
-
     HandleAnimation(deltaTime, direction);
 }
 
 bool Player::CheckCollision(const sf::Vector2f& newPosition) {
-    // Sprawdzenie kolizji ze ścianami
-    if (newPosition.x < currentRoom->GetTileSize() ||
-        newPosition.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - currentRoom->GetTileSize() ||
-        newPosition.y < currentRoom->GetTileSize() ||
-        newPosition.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - currentRoom->GetTileSize()) {
+    // Walls Collision
+    if (newPosition.x < 32 ||
+        newPosition.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - 32 ||
+        newPosition.y < 32 ||
+        newPosition.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - 32) {
         return true;
     }
 
-    // Sprawdzenie kolizji z przeszkodami
+    // Obstacle Collision
     for (const auto& obstacle : currentRoom->GetObstacles()) {
-        sf::FloatRect obstacleRect(obstacle.x * currentRoom->GetTileSize(), obstacle.y * currentRoom->GetTileSize(), currentRoom->GetTileSize(), currentRoom->GetTileSize());
+        sf::FloatRect obstacleRect(obstacle.x * 32, obstacle.y * 32, 32, 32);
         sf::FloatRect playerRect(newPosition.x, newPosition.y, sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
 
         if (playerRect.intersects(obstacleRect)) {
@@ -219,7 +214,7 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
         for (auto& enemy : enemies) {
             if (bullet->CheckCollision(enemy->GetSprite()) && enemy->IsAlive()) {
                 enemy->TakeDamage(bullet->GetDamage());
-                bullet->SetInactive();
+                bullet->SetAlive(false);
                 break;
             }
         }
@@ -228,7 +223,7 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
     bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
      [](Bullet* bullet) {
          bool toRemove = !bullet->IsAlive();
-         if (toRemove) delete bullet;  // Usuń z pamięci
+         if (toRemove) delete bullet;
          return toRemove;
      }),
     bullets.end());
@@ -240,14 +235,14 @@ void Player::TakeDamage(int damage) {
     if (!immortal) {
         currentHealth -= damage;
         immortal = true;
-        damageTimer = 0.0f;  // Rozpocznij timer migotania
+        damageTimer = 0.0f;
         originalColor = sprite.getColor();
         sprite.setColor(sf::Color::Red);
     }
 }
 
-void Player::ChangeRoom(Player& player, Room& newRoom) {
-    player.Initialize(newRoom);
+void Player::SetCurrentRoom(Room& room) {
+    currentRoom = &room;
 }
 
 sf::Vector2f Player::GetCenterOfSprite() const {
@@ -255,4 +250,8 @@ sf::Vector2f Player::GetCenterOfSprite() const {
     sf::FloatRect bounds = sprite.getGlobalBounds();
     sf::Vector2f center(position.x + bounds.width / 2.f, position.y + bounds.height / 2.f);
     return center;
+}
+
+void Player::SetPosition(sf::Vector2f newPosition) {
+    sprite.setPosition(newPosition);
 }

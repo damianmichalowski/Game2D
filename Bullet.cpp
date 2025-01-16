@@ -44,8 +44,8 @@ bool Bullet::CheckCollision(const sf::Sprite& target) const {
     return isAlive && bulletShape.getGlobalBounds().intersects(target.getGlobalBounds());
 }
 
-void Bullet::SetInactive() {
-    isAlive = false;
+void Bullet::SetAlive(bool isAlive) {
+    this->isAlive = isAlive;
 }
 
 bool Bullet::IsAlive() const {

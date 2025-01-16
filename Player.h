@@ -56,10 +56,12 @@ public:
     void Initialize(Room& room);
     void Load();
     void Update(float& deltaTime);
-    void Draw(sf::RenderWindow& window, sf::View& view);
+    void Draw(sf::RenderWindow& window);
     void TakeDamage(int damage);
     void CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies);
-    void ChangeRoom(Player& player, Room& newRoom);
+    void SetCurrentRoom(Room& room);
+    sf::Vector2f GetCenterOfSprite() const;
+    void SetPosition(sf::Vector2f newPosition);
 
     sf::Sprite GetSprite() {
         return sprite;
@@ -73,9 +75,10 @@ public:
         return immortal;
     }
 
-    sf::Vector2f GetCenterOfSprite() const;
+    sf::Vector2f getPosition() const {
+        return sprite.getPosition();
+    }
 };
-
 
 
 #endif //PLAYER_H

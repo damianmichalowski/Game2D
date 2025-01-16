@@ -5,7 +5,7 @@
 
 Enemy::Enemy(const float x, const float y)
 : posX(x), posY(y), health(100),
-damage(1), speed(0.05f), isAlive(true),
+damage(1), speed(0.03f), isAlive(true),
 animationTimer(0.0f), animationSpeed(150.0f), currentFrame(0), frameCount(8),
 inactiveTimer(0.0f), maxInactiveCooldown(1500){}
 
@@ -14,13 +14,17 @@ Enemy::~Enemy() {
 }
 
 void Enemy::Initialize() {
-    boundingBox.setOutlineThickness(2);
-    boundingBox.setOutlineColor(sf::Color::Red);
     boundingBox.setFillColor(sf::Color::Transparent);
-
-    visionBox.setOutlineThickness(2);
-    visionBox.setOutlineColor(sf::Color::Yellow);
     visionBox.setFillColor(sf::Color::Transparent);
+
+    if(Globals::IsDebugMode()) {
+        boundingBox.setOutlineThickness(2);
+        boundingBox.setOutlineColor(sf::Color::Red);
+        visionBox.setOutlineThickness(2);
+        visionBox.setOutlineColor(sf::Color::Yellow);
+    }else {
+        visionBox.setFillColor(sf::Color::Transparent);
+    }
 
     size = sf::Vector2i(64, 64);
 
@@ -34,10 +38,9 @@ void Enemy::Initialize() {
     sprite.setTextureRect(sf::IntRect(spriteXIndex * size.x, spriteYIndex * size.y, size.x, size.y));
     sprite.setPosition(sf::Vector2f(posX, posY));
 
-    healthText.setPosition(sprite.getPosition());
     healthText.setFont(font);
     healthText.setString(std::to_string(health));
-    healthText.setScale(0.6f, 0.6f);
+    healthText.setScale(0.25f, 0.25f);
 }
 
 void Enemy::Load() {
@@ -58,7 +61,7 @@ void Enemy::Update(float deltaTime, Player& player) {
     sf::Vector2f visionBoxOffset = sf::Vector2f(visionBox.getSize().x / 2, visionBox.getSize().y / 2);
     visionBox.setPosition(spriteCenter - visionBoxOffset);
 
-    healthText.setPosition(sprite.getPosition());
+    healthText.setPosition(sf::Vector2f(sprite.getPosition().x, sprite.getPosition().y - 10));
 
     inactiveTimer+=deltaTime;
     if(inactiveTimer >= maxInactiveCooldown) {
@@ -74,9 +77,6 @@ void Enemy::Update(float deltaTime, Player& player) {
         CheckIsPlayerCollision(sprite, player, player.IsImmortal());
         HandleAnimation(deltaTime, isPlayerInVision);
     }
-
-
-
 }
 
 void Enemy::Draw(sf::RenderWindow& window) {

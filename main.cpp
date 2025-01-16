@@ -1,10 +1,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#include "Dungeon.h"
 #include "FrameRate.h"
-#include "Player.h"
-#include "Skeleton.h"
-#include "Room.h"
 
 auto main() -> int {
     sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
@@ -12,19 +10,16 @@ auto main() -> int {
     window.setFramerateLimit(180);
 
     FrameRate frameRate;
-    Room room = Room(13,7,32,Difficulty::Easy);
-    Player player;
+    Dungeon dungeon;
 
-    sf::View view(sf::FloatRect(0, 0, room.GetRoomWidthPX(), room.GetRoomHeightPX()));
+    sf::View view(sf::FloatRect(0, 0, 416, 224));
     window.setView(view);
 
     frameRate.Load();
-    room.Load();
-    player.Load();
+    dungeon.Load();
 
     frameRate.Initialize(view);
-    room.Initialize();
-    player.Initialize(room);
+    dungeon.Initialize();
 
     sf::Clock clock;
     while (window.isOpen()){
@@ -39,13 +34,11 @@ auto main() -> int {
         float deltaTime = deltaTimeTimer.asMicroseconds() / 1000.0;
 
         frameRate.Update(deltaTime);
-        player.Update(deltaTime);
-        room.Update(deltaTime, player);
+        dungeon.Update(deltaTime);
 
         window.clear(sf::Color::Black);
 
-        room.Draw(window);
-        player.Draw(window, view);
+        dungeon.Draw(window);
         frameRate.Draw(window);
 
         window.display();

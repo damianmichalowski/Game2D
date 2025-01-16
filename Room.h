@@ -31,6 +31,8 @@ private:
     Difficulty difficult;
     std::vector<Enemy*> enemies;
     bool isCleared;
+    sf::Vector2i openedDoor;
+    bool openedDoorCollision = false;
     //std::vector<Item> items;
 
     //fire animation
@@ -38,9 +40,12 @@ private:
     const float animationDuration = 200;
     int currentFrame = 0;
 
+    //testing
+    sf::RectangleShape openDoorRect;
+
 public:
     Room();
-    Room(int ROOM_WIDTH, int ROOM_HEIGHT, int enemiesSize, Difficulty difficult);
+    Room(Difficulty difficult);
     ~Room();
     void Initialize();
     void Load();
@@ -53,9 +58,11 @@ public:
     bool IsObstacleTile(int x, int y) const;
     void GenerateTiles();
     void GenerateEnemies(Difficulty difficulty);
-    void IsCleared();
+    bool IsRoomCleared() const;
     void OpenRandomDoor();
+    bool IsPlayerEnterNewRoom(Player& player) const;
     void HandleFireAnimation(const float &deltaTime);
+    void ClearDeadEnemies();
 
     int GetRoomWidthPX() const {
         return ROOM_WIDTH * TILE_SIZE;
@@ -65,12 +72,28 @@ public:
         return ROOM_HEIGHT * TILE_SIZE;
     }
 
-    int GetTileSize() const {
-        return TILE_SIZE;
-    }
-
     std::vector<sf::Vector2i> GetObstacles() const{
         return obstacles;
+    }
+
+    sf::Vector2i GetOpenDoor() const {
+        return openedDoor;
+    }
+
+    sf::Vector2i GetTopDoor() const {
+        return doorTop;
+    }
+
+    sf::Vector2i GetBottomDoor() const {
+        return doorBottom;
+    }
+
+    sf::Vector2i GetLeftDoor() const {
+        return doorLeft;
+    }
+
+    sf::Vector2i GetRightDoor() const {
+        return doorRight;
     }
 };
 
