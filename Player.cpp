@@ -209,7 +209,7 @@ void Player::HandleShooting(const float& deltaTime) {
     }
 }
 
-void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies) {
+void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies, std::vector<sf::Vector2i>& obstacles,std::vector<sf::RectangleShape>& tiles) {
     for (auto& bullet : bullets) {
         if (!bullet->IsAlive()) continue;
 
@@ -220,6 +220,28 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
                 enemy->TakeDamage(bullet->GetDamage());
                 bullet->SetAlive(false);
                 break;
+            }
+        }
+
+        for (const auto& obstacle : obstacles) {
+            sf::RectangleShape obstacleRect;
+            obstacleRect.setSize(sf::Vector2f(32, 32));
+            obstacleRect.setPosition(static_cast<float>(obstacle.x * 32), static_cast<float>(obstacle.y * 32));
+
+            if (bullet->CheckCollision(obstacleRect)) {
+                std::cout << "bullet collision with obstacle" << std::endl;
+                bullet->SetAlive(false);
+                break;
+            }
+        }
+
+        for (const auto& tile : tiles) {
+            if (currentRoom->IsWallTile(tile.getPosition().x, tile.getPosition().y)) {
+                if(bullet->CheckCollision(tile)) {
+                    std::cout << "Bullet collision with wall tile" << std::endl;
+                    bullet->SetAlive(false);
+                    break;
+                }
             }
         }
     }

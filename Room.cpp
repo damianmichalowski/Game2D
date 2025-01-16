@@ -65,7 +65,7 @@ void Room::Update(const float &deltaTime, Player& player) {
         enemy->Update(deltaTime, player);
     }
 
-    player.CheckBulletCollisions(deltaTime, enemies);
+    player.CheckBulletCollisions(deltaTime, enemies, obstacles, tiles);
 
     if (IsRoomCleared() && !isCleared) {
         std::cout << "Cleared!" << std::endl;
@@ -161,7 +161,7 @@ void Room::GenerateObstacles() {
 }
 
 bool Room::IsWallTile(int x, int y) const {
-    return (x == 0 || x == ROOM_WIDTH - 1 || y == 0 || y == ROOM_HEIGHT - 1);
+    return (x == 0 || x == (ROOM_WIDTH - 1) * TILE_SIZE || y == 0 || y == (ROOM_HEIGHT - 1) * TILE_SIZE);
 }
 
 bool Room::IsExitTile(int x, int y) const {

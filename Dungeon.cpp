@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Dungeon::Dungeon(): currentRoom(0),maxRoomCooldown(5000){
+Dungeon::Dungeon(): currentRoom(0),maxRoomCooldown(1000){
 }
 
 Dungeon::~Dungeon() {

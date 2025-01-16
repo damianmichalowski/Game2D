@@ -58,7 +58,7 @@ public:
     void Update(float& deltaTime);
     void Draw(sf::RenderWindow& window);
     void TakeDamage(int damage);
-    void CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies);
+    void CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies, std::vector<sf::Vector2i>& obstacles,std::vector<sf::RectangleShape>& tiles);
     void SetPosition(sf::Vector2f newPosition);
     void SetCurrentRoom(Room& room);
     sf::Vector2f GetCenterHitBox() const;
