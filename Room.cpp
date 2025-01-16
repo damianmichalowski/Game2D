@@ -190,13 +190,13 @@ void Room::GenerateTiles() {
                 } else if (IsObstacleTile(x, y)) {
                         tile.setFillColor(sf::Color::Red); // Obstacles
                 } else {
-                    tile.setFillColor(sf::Color(0,0,0)); // Floor
+                    tile.setFillColor(sf::Color::Transparent); // Floor
                 }
 
                 tile.setOutlineColor(sf::Color(255,255,255));
                 tile.setOutlineThickness(-1); //Borders
             } else {
-                tile.setFillColor(sf::Color(0,0,0,0));
+                tile.setFillColor(sf::Color::Transparent);
             }
 
             tiles.push_back(tile);
@@ -292,10 +292,10 @@ void Room::OpenRandomDoor() {
     std::cout << "opened door posX: " << openedDoor.x << std::endl;
     std::cout << "opened door posY: " << openedDoor.y << std::endl;
 
-    openDoorRect = sf::RectangleShape(sf::Vector2f(TILE_SIZE + 1, TILE_SIZE + 1));
+    openDoorRect = sf::RectangleShape(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 
     openDoorRect.setPosition(openedDoor.x * TILE_SIZE ,openedDoor.y * TILE_SIZE);
-    openDoorRect.setOutlineThickness(1);
+    openDoorRect.setOutlineThickness(3);
 
     if(Globals::IsDebugMode()) {
         openDoorRect.setOutlineColor(sf::Color::Green);
@@ -304,6 +304,7 @@ void Room::OpenRandomDoor() {
 
 bool Room::IsPlayerEnterNewRoom(Player& player) const {
     if(player.GetGlobalBounds().intersects(openDoorRect.getGlobalBounds())) {
+        std::cout << "Kolizja z drzwiami" << std::endl;
         return true;
     }
     return false;

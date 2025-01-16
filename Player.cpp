@@ -25,24 +25,27 @@ void Player::Initialize(Room& room) {
     currentRoom = &room;
     currentHealth = maxHealth;
 
-    boundingBox.setFillColor(sf::Color::Transparent);
+    hitBox.setSize(sf::Vector2f(15,15));
+    hitBox.setPosition(sf::Vector2f(40,40));
+    hitBox.setFillColor(sf::Color::Transparent);
 
     if(Globals::IsDebugMode()) {
-        boundingBox.setOutlineThickness(2);
-        boundingBox.setOutlineColor(sf::Color::Green);
+        hitBox.setOutlineThickness(-1);
+        hitBox.setOutlineColor(sf::Color::Green);
     }
 
     spriteSize = sf::Vector2i(64,64);
     sprite.setTexture(texture);
+
     // max x: 8, y: 3
     int spriteXIndex = 0;
     int spriteYIndex = 2;
-
-    sprite.scale(sf::Vector2f(0.25f,0.25f));  //tile_size/aktualny rozmiar 64px
-    boundingBox.setSize(sf::Vector2f(spriteSize.x * sprite.getScale().x,spriteSize.y * sprite.getScale().y));
-
     sprite.setTextureRect(sf::IntRect(spriteXIndex * spriteSize.x, spriteYIndex * spriteSize.y, spriteSize.x, spriteSize.y));
-    sprite.setPosition(sf::Vector2f(40,40));
+
+    sprite.setScale(32.f / spriteSize.x, 32.f / spriteSize.y);
+    sprite.setOrigin(spriteSize.x / 4.f, spriteSize.y / 2.f);
+    sf::Vector2f hitBoxCenter = sf::Vector2f(hitBox.getPosition().x + hitBox.getSize().x / 2.f, hitBox.getPosition().y + hitBox.getSize().y / 2.f);
+    sprite.setPosition(hitBoxCenter);
 
     for (int i = 0; i < maxHealth; i++) {
         sf::Sprite heart(heartTexture);
@@ -65,7 +68,7 @@ void Player::Load(){
 void Player::Update(float& deltaTime) {
     HandleMovement(deltaTime);
     HandleShooting(deltaTime);
-    boundingBox.setPosition(sprite.getPosition());
+    sprite.setPosition(hitBox.getPosition());
 
     if (immortal) {
         takeDamageCooldownTimer += deltaTime;
@@ -86,7 +89,9 @@ void Player::Update(float& deltaTime) {
 }
 
 void Player::Draw(sf::RenderWindow& window) {
+    window.draw(hitBox);
     window.draw(sprite);
+    
     for (Bullet* bullet: bullets) {
         bullet->Draw(window);
     }
@@ -99,7 +104,6 @@ void Player::Draw(sf::RenderWindow& window) {
         window.draw(hearts[i]);
     }
 
-    window.draw(boundingBox);
 }
 
 void Player::HandleMovement(float& deltaTime) {
@@ -118,7 +122,7 @@ void Player::HandleMovement(float& deltaTime) {
     if (direction.x != 0.0f && direction.y != 0.0f)
         direction /= std::sqrt(2.0f);
 
-    sf::Vector2f position = sprite.getPosition();
+    sf::Vector2f position = hitBox.getPosition();
 
     sf::Vector2f newPositionX = position;
     newPositionX.x += direction.x * playerSpeed * deltaTime;
@@ -132,23 +136,23 @@ void Player::HandleMovement(float& deltaTime) {
         position.y = newPositionY.y;
     }
 
-    sprite.setPosition(position);
+    hitBox.setPosition(position);
     HandleAnimation(deltaTime, direction);
 }
 
 bool Player::CheckCollision(const sf::Vector2f& newPosition) {
     // Walls Collision
     if (newPosition.x < 32 ||
-        newPosition.x + sprite.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - 32 ||
+        newPosition.x + hitBox.getGlobalBounds().width > currentRoom->GetRoomWidthPX() - 32 ||
         newPosition.y < 32 ||
-        newPosition.y + sprite.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - 32) {
+        newPosition.y + hitBox.getGlobalBounds().height > currentRoom->GetRoomHeightPX() - 32) {
         return true;
     }
 
     // Obstacle Collision
     for (const auto& obstacle : currentRoom->GetObstacles()) {
         sf::FloatRect obstacleRect(obstacle.x * 32, obstacle.y * 32, 32, 32);
-        sf::FloatRect playerRect(newPosition.x, newPosition.y, sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
+        sf::FloatRect playerRect(newPosition.x, newPosition.y, hitBox.getGlobalBounds().width, hitBox.getGlobalBounds().height);
 
         if (playerRect.intersects(obstacleRect)) {
             TakeDamage(1);
@@ -198,7 +202,7 @@ void Player::HandleShooting(const float& deltaTime) {
 
         if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
-            bullet->Initialize(GetCenterOfSprite(), shootingDirection, 0.2f, 600);
+            bullet->Initialize(GetCenterHitBox(), shootingDirection, 0.2f, 600);
             bullets.push_back(bullet);
             fireRateTimer = 0;
         }
@@ -212,7 +216,7 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
         bullet->Update(deltaTime);
 
         for (auto& enemy : enemies) {
-            if (bullet->CheckCollision(enemy->GetSprite()) && enemy->IsAlive()) {
+            if (bullet->CheckCollision(enemy->GetHitbox()) && enemy->IsAlive()) {
                 enemy->TakeDamage(bullet->GetDamage());
                 bullet->SetAlive(false);
                 break;
@@ -245,7 +249,14 @@ void Player::SetCurrentRoom(Room& room) {
     currentRoom = &room;
 }
 
-sf::Vector2f Player::GetCenterOfSprite() const {
+sf::Vector2f Player::GetCenterHitBox() const {
+    sf::Vector2f position = hitBox.getPosition();
+    sf::FloatRect bounds = hitBox.getGlobalBounds();
+    sf::Vector2f center(position.x + bounds.width / 2.f, position.y + bounds.height / 2.f);
+    return center;
+}
+
+sf::Vector2f Player::GetCenterSprite() const {
     sf::Vector2f position = sprite.getPosition();
     sf::FloatRect bounds = sprite.getGlobalBounds();
     sf::Vector2f center(position.x + bounds.width / 2.f, position.y + bounds.height / 2.f);
@@ -253,5 +264,5 @@ sf::Vector2f Player::GetCenterOfSprite() const {
 }
 
 void Player::SetPosition(sf::Vector2f newPosition) {
-    sprite.setPosition(newPosition);
+    hitBox.setPosition(newPosition);
 }

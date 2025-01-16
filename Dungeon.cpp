@@ -57,11 +57,11 @@ void Dungeon::CreateNextRoom() {
     const int roomHeight = rooms[currentRoom].GetRoomHeightPX();
 
     if (prevDoor == rooms[currentRoom - 1].GetTopDoor()) {
-        player.SetPosition(sf::Vector2f(roomWidth / 2, roomHeight - 33 - 16));
+        player.SetPosition(sf::Vector2f(roomWidth / 2, roomHeight - 33 - 15));
     } else if (prevDoor == rooms[currentRoom - 1].GetBottomDoor()) {
         player.SetPosition(sf::Vector2f(roomWidth / 2, 33));
     } else if (prevDoor == rooms[currentRoom - 1].GetLeftDoor()) {
-        player.SetPosition(sf::Vector2f(roomWidth - 32 - 16, roomHeight / 2));
+        player.SetPosition(sf::Vector2f(roomWidth - 32 - 15, roomHeight / 2));
     } else if (prevDoor == rooms[currentRoom - 1].GetRightDoor()) {
         player.SetPosition(sf::Vector2f(33, roomHeight / 2));
     }

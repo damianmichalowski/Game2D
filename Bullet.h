@@ -19,7 +19,7 @@ public:
     void Initialize(const sf::Vector2f &position, sf::Vector2f &direction, float speed, float lifeTime);
     void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
-    bool CheckCollision(const sf::Sprite& target) const;
+    bool CheckCollision(const sf::RectangleShape& target) const;
     float GetDamage() const;
     void SetAlive(bool isAlive);
     bool IsAlive() const;

@@ -1,10 +1,14 @@
 #include "Bullet.h"
+
+#include <iostream>
+
 #include "Math.h"
 
 Bullet::Bullet() : speed(0), damage(10.0f) {
 }
 
 Bullet::~Bullet() {
+    std::cout << "Bullet destructed" << std::endl;
 }
 
 void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, float speed, float lifeTime) {
@@ -13,7 +17,7 @@ void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, f
     this->lifeTime = 0;
     this->isAlive = true;
 
-    bulletShape.setSize(sf::Vector2f(10, 10));
+    bulletShape.setSize(sf::Vector2f(6, 6));
     bulletShape.setPosition(position);
     this->direction = Math::NormalizeVector(direction);
 }
@@ -40,7 +44,7 @@ float Bullet::GetDamage() const {
     return damage;
 }
 
-bool Bullet::CheckCollision(const sf::Sprite& target) const {
+bool Bullet::CheckCollision(const sf::RectangleShape& target) const {
     return isAlive && bulletShape.getGlobalBounds().intersects(target.getGlobalBounds());
 }
 

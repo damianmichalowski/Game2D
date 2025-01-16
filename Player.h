@@ -10,7 +10,12 @@ class Room;
 
 class Player {
 private:
+    sf::RectangleShape hitBox;
+    sf::Sprite sprite;
     sf::Texture texture;
+    sf::Vector2i spriteSize;
+    sf::Vector2i size;
+
     std::vector<Bullet*> bullets;
 
     float maxFireRate;
@@ -18,11 +23,6 @@ private:
 
     float playerSpeed;
     sf::Vector2f direction;
-
-    sf::Sprite sprite;
-    sf::Vector2i spriteSize;
-    sf::Vector2i size;
-    sf::RectangleShape boundingBox;
 
     //movement animation
     int currentFrame;
@@ -59,25 +59,27 @@ public:
     void Draw(sf::RenderWindow& window);
     void TakeDamage(int damage);
     void CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies);
-    void SetCurrentRoom(Room& room);
-    sf::Vector2f GetCenterOfSprite() const;
     void SetPosition(sf::Vector2f newPosition);
+    void SetCurrentRoom(Room& room);
+    sf::Vector2f GetCenterHitBox() const;
+    sf::Vector2f GetCenterSprite() const;
 
-    sf::Sprite GetSprite() {
-        return sprite;
+    sf::RectangleShape GetHitBox() {
+        return hitBox;
     }
 
     sf::FloatRect GetGlobalBounds() const {
-        return sprite.getGlobalBounds();
+        return hitBox.getGlobalBounds();
+    }
+
+    sf::Vector2f getPosition() const {
+        return hitBox.getPosition();
     }
 
     bool IsImmortal() const {
         return immortal;
     }
 
-    sf::Vector2f getPosition() const {
-        return sprite.getPosition();
-    }
 };
 
 

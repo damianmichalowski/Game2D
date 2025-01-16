@@ -7,17 +7,15 @@ class Player;
 
 class Enemy {
 protected:
+    sf::RectangleShape hitBox;
+    sf::RectangleShape visionBox;
     sf::Sprite sprite;
+    sf::Vector2i spriteSize;
     sf::Texture texture;
     float posX, posY;
     sf::Vector2f direction;
     float inactiveTimer;
     float maxInactiveCooldown;
-
-    sf::RectangleShape boundingBox;
-    sf::RectangleShape visionBox;
-
-    sf::Vector2i size;
 
     int health;
     int damage;
@@ -42,23 +40,20 @@ public:
     virtual void Update(float deltaTime, Player& player);
     virtual void Draw(sf::RenderWindow& window);
     virtual void HandleAnimation(float deltaTime, bool isPlayerInVision);
-    virtual void CheckIsPlayerCollision(sf::Sprite &sprite, Player &player, bool isImmortal);
+    virtual void CheckIsPlayerCollision(Player &player, bool isImmortal);
     // virtual void Attack();
     // virtual void Die();
 
     void TakeDamage(int damage);
-    // void SetPosition(float x, float y);
-    // void Move(float deltaX, float deltaY);
-    // bool IsWithinRange(const sf::Vector2f& position) const;
     bool IsAlive() const {
         return isAlive;
     }
     sf::FloatRect GetGlobalBounds() const {
-        return sprite.getGlobalBounds();
+        return hitBox.getGlobalBounds();
     }
 
-    sf::Sprite GetSprite() const {
-        return sprite;
+    sf::RectangleShape GetHitbox() const {
+        return hitBox;
     }
 };
 
