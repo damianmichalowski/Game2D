@@ -221,11 +221,8 @@ void Room::GenerateEnemies(Difficulty difficulty) {
         for (int x = 2; x < ROOM_WIDTH - 2; ++x) {
 
             bool isOccupied = false;
-            for (const auto& obstacle : obstacles) {
-                if (obstacle.x == x * TILE_SIZE && obstacle.y == y * TILE_SIZE) {
-                    isOccupied = true;
-                    break;
-                }
+            if (IsObstacleTile(x, y)) {
+                isOccupied = true;
             }
 
             if (!isOccupied) {
