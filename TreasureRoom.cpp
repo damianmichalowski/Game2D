@@ -1,6 +1,6 @@
 #include "TreasureRoom.h"
 
-TreasureRoom::TreasureRoom(const int roomCount) : Room(Difficulty::Easy, roomCount), openNextRoomTimer(0) {
+TreasureRoom::TreasureRoom(const int currentRoom, sf::Vector2i prevDoor) : Room(Difficulty::Easy, currentRoom, prevDoor), openNextRoomTimer(0) {
     std::cout << "TreasureRoom constructor" << std::endl;
 }
 
@@ -27,9 +27,9 @@ void TreasureRoom::Initialize() {
     roomNumberText.setCharacterSize(16);
     roomNumberText.setFillColor(sf::Color::White);
     if(Globals::IsDebugMode()) {
-        roomNumberText.setString("Room " + std::to_string(roomCount));
+        roomNumberText.setString("Room " + std::to_string(currentRoom));
     } else {
-        roomNumberText.setString("Room " + std::to_string(++roomCount));
+        roomNumberText.setString("Room " + std::to_string(currentRoom));
     }
     roomNumberText.setPosition(32.f, 32.f * 7 - 25);
 }
@@ -40,6 +40,7 @@ void TreasureRoom::Update(const float &deltaTime, Player& player) {
 
     openNextRoomTimer += deltaTime;
     if (openNextRoomTimer >= 4000 && !isCleared) {
+        OpenPrevDoor();
         OpenRandomDoor();
         isCleared = true;
     }
@@ -59,8 +60,10 @@ void TreasureRoom::Draw(sf::RenderWindow &window) {
 
     if (isCleared) {
         window.draw(doorOpenSprite);
+        window.draw(prevDoorSprite);
         if(Globals::IsDebugMode()) {
             window.draw(openDoorRect);
+            window.draw(prevDoorRect);
         }
     }
 }

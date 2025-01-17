@@ -5,7 +5,7 @@
 #include "Globals.h"
 #include "Math.h"
 
-Bullet::Bullet() : speed(0.2f), damage(50.0f),maxAliveTime(1000), aliveTimer(0), isAlive(true), frameRect(0, 32, 32, 32) {
+Bullet::Bullet() : speed(0.2f), damage(100.0f),maxAliveTime(1000), aliveTimer(0), isAlive(true), frameRect(0, 32, 32, 32) {
 }
 
 Bullet::~Bullet() {

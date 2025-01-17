@@ -27,12 +27,16 @@ protected:
     sf::Vector2i doorBottom;
     sf::Vector2i doorLeft;
     sf::Vector2i doorRight;
-    sf::Texture doorOpenTexture, doorClosedTexture, dickDoorTexture, heartDoorTexture, dieDoorTexture;
-    sf::Sprite doorOpenSprite, doorClosedSprite, doorDickSprite, doorHeartSprite, doorDieSprite;
+    sf::Texture doorOpenTexture, prevDoorTexture, doorClosedTexture, dickDoorTexture, heartDoorTexture, dieDoorTexture;
+    sf::Sprite doorOpenSprite,prevDoorSprite, doorClosedSprite, doorDickSprite, doorHeartSprite, doorDieSprite;
     Difficulty difficult;
     std::vector<Enemy*> enemies;
     bool isCleared;
     sf::Vector2i openedDoor;
+    sf::Vector2i prevDoor;
+    //testing
+    sf::RectangleShape openDoorRect;
+    sf::RectangleShape prevDoorRect;
     bool openedDoorCollision = false;
     //std::vector<Item> items;
 
@@ -41,20 +45,18 @@ protected:
     const float animationDuration = 200;
     int currentFrame = 0;
 
-    //testing
-    sf::RectangleShape openDoorRect;
-
-    int roomCount;
+    int currentRoom;
     sf::Font font;
     sf::Text roomNumberText;
 
 public:
-    Room(Difficulty difficult, const int roomCount);
+    Room(Difficulty difficult, const int currentRoom, sf::Vector2i prevDoor = sf::Vector2i(0, 0));
     virtual ~Room();
     virtual void Initialize();
     void Load();
     virtual void Update(const float& deltaTime, Player& player);
     virtual void Draw(sf::RenderWindow& window);
+    void SetPrevDoor(sf::Vector2i enteredDoor);
     void InitializeDoors();
     void GenerateObstacles();
     bool IsWallTile(int x, int y) const;
@@ -64,7 +66,10 @@ public:
     void GenerateEnemies(Difficulty difficulty);
     bool IsRoomCleared() const;
     void OpenRandomDoor();
+    void OpenPrevDoor();
+    void SetDoorPositionAndRotation(sf::Sprite& doorSprite, sf::Vector2i door, float rotation);
     bool IsPlayerEnterNewRoom(Player& player) const;
+    bool IsPlayerEnterPrevRoom(Player& player) const;
     void ClearDeadEnemies();
 
     int GetRoomWidthPX() const {
@@ -81,6 +86,10 @@ public:
 
     sf::Vector2i GetOpenDoor() const {
         return openedDoor;
+    }
+
+    sf::Vector2i GetPrevDoor() const {
+        return prevDoor;
     }
 
     sf::Vector2i GetTopDoor() const {

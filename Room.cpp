@@ -7,9 +7,9 @@
 #include "Dungeon.h"
 #include "Skeleton.h"
 
-Room::Room(Difficulty difficulty, const int roomCount)
+Room::Room(Difficulty difficulty, const int currentRoom,sf::Vector2i prevDoor)
         : TILE_SIZE(32), ROOM_WIDTH(13), ROOM_HEIGHT(7),
-          NUM_OBSTACLES(6), difficult(difficulty), roomCount(roomCount) {
+          NUM_OBSTACLES(6), difficult(difficulty), currentRoom(currentRoom), prevDoor(prevDoor) {
 }
 
 Room::~Room() {
@@ -17,6 +17,7 @@ Room::~Room() {
 
 void Room::Initialize() {
     std::cout << "Initializing room..." << std::endl;
+    std::cout << "New Room prev door after INIT: " << prevDoor.x << " " <<prevDoor.y << std::endl;
     std::srand(static_cast<unsigned>(std::time(nullptr)));
     NUM_OBSTACLES = std::rand() % 9;
 
@@ -38,9 +39,9 @@ void Room::Initialize() {
     roomNumberText.setCharacterSize(16);
     roomNumberText.setFillColor(sf::Color::White);
     if(Globals::IsDebugMode()) {
-        roomNumberText.setString("Room " + std::to_string(roomCount));
+        roomNumberText.setString("Room " + std::to_string(currentRoom));
     } else {
-        roomNumberText.setString("Room " + std::to_string(++roomCount));
+        roomNumberText.setString("Room " + std::to_string(currentRoom));
     }
     roomNumberText.setPosition(32.f, 32.f * 7 - 25);
 }
@@ -50,6 +51,9 @@ void Room::Load() {
         std::cerr << "Failed to load background texture in Room" << std::endl;
     }
     if (!doorOpenTexture.loadFromFile("../Assets/Map/Doors/openDoor.png")) {
+        std::cerr << "Failed to load open door texture in Room" << std::endl;
+    }
+    if (!prevDoorTexture.loadFromFile("../Assets/Map/Doors/prevDoor.png")) {
         std::cerr << "Failed to load open door texture in Room" << std::endl;
     }
     if (!doorClosedTexture.loadFromFile("../Assets/Map/Doors/closedDoor.png")) {
@@ -78,6 +82,7 @@ void Room::Update(const float &deltaTime, Player& player) {
 
     if (IsRoomCleared() && !isCleared) {
         std::cout << "Cleared!" << std::endl;
+        OpenPrevDoor();
         OpenRandomDoor();
         isCleared = true;
     }
@@ -96,24 +101,31 @@ void Room::Draw(sf::RenderWindow &window) {
         window.draw(tile);
     }
 
+    for (auto& obstacle : obstacles) {
+        obstacle->Draw(window);
+    }
+
     window.draw(doorClosedSprite);
     window.draw(doorDieSprite);
     window.draw(doorDickSprite);
     window.draw(doorHeartSprite);
 
-    for (const auto& enemy : enemies) {
-        enemy->Draw(window);
-    }
-
     if (isCleared) {
         window.draw(doorOpenSprite);
+        if(currentRoom > 0) {
+            window.draw(prevDoorSprite);
+        };
+
         if(Globals::IsDebugMode()) {
             window.draw(openDoorRect);
+            if(currentRoom > 0) {
+                window.draw(prevDoorRect);
+            };
         }
     }
 
-    for (auto& obstacle : obstacles) {
-        obstacle->Draw(window);
+    for (const auto& enemy : enemies) {
+        enemy->Draw(window);
     }
 
     window.draw(roomNumberText);
@@ -127,6 +139,9 @@ void Room::InitializeDoors() {
 
     doorOpenSprite.setTexture(doorOpenTexture);
     doorOpenSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
+
+    prevDoorSprite.setTexture(prevDoorTexture);
+    prevDoorSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
 
     doorClosedSprite.setTexture(doorClosedTexture);
     doorClosedSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
@@ -276,57 +291,115 @@ bool Room::IsRoomCleared() const {
 }
 
 void Room::OpenRandomDoor() {
-    int randomDoor = std::rand() % 4;
+    int randomDoor;
     sf::FloatRect openDoorBounds = doorOpenSprite.getLocalBounds();
+    sf::Vector2i newDoorPosition;
+    bool isValidPosition = false;
 
-    doorOpenSprite.setOrigin(0, 0);
-    doorOpenSprite.setRotation(0);
+    do {
+        randomDoor = std::rand() % 4;
+        switch (randomDoor) {
+            case 0: newDoorPosition = doorTop; break;
+            case 1: newDoorPosition = doorBottom; break;
+            case 2: newDoorPosition = doorLeft; break;
+            case 3: newDoorPosition = doorRight; break;
+        }
+        if (newDoorPosition != prevDoor) {
+            isValidPosition = true;
+        }
+    } while (!isValidPosition);
+
+    openedDoor = newDoorPosition;
+    doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
 
     switch (randomDoor) {
         case 0: // Top
-            openedDoor = doorTop;
-            doorOpenSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
+            doorOpenSprite.setPosition((doorTop.x + 0.5f) * TILE_SIZE, (doorTop.y + 0.5f) * TILE_SIZE);
+            doorOpenSprite.setRotation(0);
             break;
         case 1: // Bottom
-            openedDoor = doorBottom;
-            doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
             doorOpenSprite.setPosition((doorBottom.x + 0.5f) * TILE_SIZE, (doorBottom.y + 0.5f) * TILE_SIZE);
             doorOpenSprite.setRotation(180);
-        break;
+            break;
         case 2: // Left
-            openedDoor = doorLeft;
-            doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
             doorOpenSprite.setPosition((doorLeft.x + 0.5f) * TILE_SIZE, (doorLeft.y + 0.5f) * TILE_SIZE);
             doorOpenSprite.setRotation(270);
             break;
         case 3: // Right
-            openedDoor = doorRight;
-            doorOpenSprite.setOrigin(openDoorBounds.width / 2.0f, openDoorBounds.height / 2.0f);
             doorOpenSprite.setPosition((doorRight.x + 0.5f) * TILE_SIZE, (doorRight.y + 0.5f) * TILE_SIZE);
             doorOpenSprite.setRotation(90);
             break;
     }
 
-    std::cout << "opened door posX: " << openedDoor.x << std::endl;
-    std::cout << "opened door posY: " << openedDoor.y << std::endl;
+    std::cout << "Opened door posX: " << openedDoor.x << std::endl;
+    std::cout << "Opened door posY: " << openedDoor.y << std::endl;
 
     openDoorRect = sf::RectangleShape(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-
-    openDoorRect.setPosition(openedDoor.x * TILE_SIZE ,openedDoor.y * TILE_SIZE);
+    openDoorRect.setPosition(openedDoor.x * TILE_SIZE, openedDoor.y * TILE_SIZE);
     openDoorRect.setOutlineThickness(3);
 
-    if(Globals::IsDebugMode()) {
+    if (Globals::IsDebugMode()) {
         openDoorRect.setOutlineColor(sf::Color::Green);
     }
 }
 
+void Room::OpenPrevDoor() {
+    if(currentRoom == 0) return;
+
+    prevDoorSprite.setOrigin(0, 0);
+    prevDoorSprite.setRotation(0);
+
+    prevDoorSprite.setPosition(prevDoor.x * TILE_SIZE, prevDoor.y * TILE_SIZE);
+
+    if (prevDoor == doorTop) {
+        prevDoor = doorBottom;
+        SetDoorPositionAndRotation(prevDoorSprite, prevDoor, 180);
+    } else if (prevDoor == doorBottom) {
+        prevDoor = doorTop;
+        SetDoorPositionAndRotation(prevDoorSprite, prevDoor, 0);
+    } else if (prevDoor == doorLeft) {
+        prevDoor = doorRight;
+        SetDoorPositionAndRotation(prevDoorSprite, prevDoor, 90);
+    } else if (prevDoor == doorRight) {
+        prevDoor = doorLeft;
+        SetDoorPositionAndRotation(prevDoorSprite, prevDoor, 270);
+    }
+
+    prevDoorRect = sf::RectangleShape(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+    prevDoorRect.setPosition(prevDoor.x * TILE_SIZE, prevDoor.y * TILE_SIZE);
+    prevDoorRect.setOutlineThickness(3);
+
+    if(Globals::IsDebugMode()) {
+        prevDoorRect.setOutlineColor(sf::Color::Blue);
+    }
+
+    std::cout << "open prev after OPEN door posX: " << prevDoor.x << std::endl;
+    std::cout << "open prev afrer OPEN posY: " << prevDoor.y << std::endl;
+}
+
+void Room::SetDoorPositionAndRotation(sf::Sprite& doorSprite, sf::Vector2i door, float rotation) {
+    sf::FloatRect bounds = doorSprite.getLocalBounds();
+    doorSprite.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
+    doorSprite.setPosition((door.x + 0.5f) * TILE_SIZE, (door.y + 0.5f) * TILE_SIZE);
+    doorSprite.setRotation(rotation);
+}
+
 bool Room::IsPlayerEnterNewRoom(Player& player) const {
     if(player.GetGlobalBounds().intersects(openDoorRect.getGlobalBounds())) {
-        std::cout << "Kolizja z drzwiami" << std::endl;
+        std::cout << "Collision with nextRoom" << std::endl;
         return true;
     }
     return false;
 };
+
+bool Room::IsPlayerEnterPrevRoom(Player& player) const {
+    if(player.GetGlobalBounds().intersects(prevDoorRect.getGlobalBounds())) {
+        std::cout << "Collision z prev door" << std::endl;
+        return true;
+    }
+    return false;
+};
+
 
 void Room::ClearDeadEnemies() {
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
