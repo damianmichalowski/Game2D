@@ -56,7 +56,6 @@ public:
     void Load();
     virtual void Update(const float& deltaTime, Player& player);
     virtual void Draw(sf::RenderWindow& window);
-    void SetPrevDoor(sf::Vector2i enteredDoor);
     void InitializeDoors();
     void GenerateObstacles();
     bool IsWallTile(int x, int y) const;

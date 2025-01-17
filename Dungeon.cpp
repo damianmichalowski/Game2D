@@ -68,22 +68,23 @@ void Dungeon::CreateNextRoom() {
     rooms[currentRoom]->Initialize();
     player.SetCurrentRoom(*rooms[currentRoom]);
 
-    SetPlayerPositionInRoom(prevDoor);
+    SetPlayerPositionInNextRoom(prevDoor);
 }
 
 void Dungeon::MoveToNextRoom() {
     currentRoom++;
     player.SetCurrentRoom(*rooms[currentRoom]);
-    SetPlayerPositionInRoom(prevDoors[currentRoom - 1]);
+    SetPlayerPositionInNextRoom(prevDoors[currentRoom - 1]);
 }
 
 void Dungeon::BackToPrevRoom() {
     currentRoom--;
     player.SetCurrentRoom(*rooms[currentRoom]);
-    SetPlayerPositionInRoom(prevDoors[currentRoom]);
+    SetPlayerPositionInPrevRoom(prevDoors[currentRoom]);
+    std::cout << "prevDoors[currentRoom]" << prevDoors[currentRoom].x << " " << prevDoors[currentRoom].y << std::endl;
 }
 
-void Dungeon::SetPlayerPositionInRoom(sf::Vector2i prevDoor) {
+void Dungeon::SetPlayerPositionInNextRoom(sf::Vector2i prevDoor) {
     if (prevDoor == rooms[currentRoom]->GetTopDoor()) {
         player.SetPosition(sf::Vector2f(roomWidth / 2, roomHeight - 33 - 15));
     } else if (prevDoor == rooms[currentRoom]->GetBottomDoor()) {
@@ -92,5 +93,17 @@ void Dungeon::SetPlayerPositionInRoom(sf::Vector2i prevDoor) {
         player.SetPosition(sf::Vector2f(roomWidth - 32 - 15, roomHeight / 2));
     } else if (prevDoor == rooms[currentRoom]->GetRightDoor()) {
         player.SetPosition(sf::Vector2f(33, roomHeight / 2));
+    }
+}
+
+void Dungeon::SetPlayerPositionInPrevRoom(sf::Vector2i  currentDoor) {
+    if (currentDoor == rooms[currentRoom]->GetTopDoor()) {
+        player.SetPosition(sf::Vector2f(roomWidth / 2,  33));
+    } else if (currentDoor == rooms[currentRoom]->GetBottomDoor()) {
+        player.SetPosition(sf::Vector2f(roomWidth / 2, roomHeight - 33 - 15));
+    } else if (currentDoor == rooms[currentRoom]->GetLeftDoor()) {
+        player.SetPosition(sf::Vector2f(33, roomHeight / 2));
+    } else if (currentDoor == rooms[currentRoom]->GetRightDoor()) {
+        player.SetPosition(sf::Vector2f(roomWidth - 32 - 15, roomHeight / 2));
     }
 }

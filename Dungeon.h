@@ -36,7 +36,8 @@ private:
     void CreateNextRoom();
     void MoveToNextRoom();
     void BackToPrevRoom();
-    void SetPlayerPositionInRoom(sf::Vector2i  prevDoor);
+    void SetPlayerPositionInNextRoom(sf::Vector2i  prevDoor);
+    void SetPlayerPositionInPrevRoom(sf::Vector2i  currentDoor);
 };
 
 #endif // DUNGEON_H
