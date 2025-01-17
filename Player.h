@@ -43,6 +43,10 @@ private:
 
     Room* currentRoom;
 
+    sf::Sprite dieImageSprite;
+    sf::Texture dieImageTexture;
+    bool isAlive;
+
     void HandleMovement(float& deltaTime);
     bool CheckCollision(const sf::Vector2f& newPosition);
     void HandleAnimation(float& deltaTime, sf::Vector2f& direction);
@@ -58,7 +62,8 @@ public:
     void Update(float& deltaTime);
     void Draw(sf::RenderWindow& window);
     void TakeDamage(int damage);
-    void CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies, std::vector<sf::Vector2i>& obstacles,std::vector<sf::RectangleShape>& tiles);
+    void CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies,std::vector<sf::RectangleShape>& tiles);
+    void CheckBulletCollisions(const float& deltaTime, std::vector<sf::RectangleShape>& tiles);
     void SetPosition(sf::Vector2f newPosition);
     void SetCurrentRoom(Room& room);
     sf::Vector2f GetCenterHitBox() const;
@@ -78,6 +83,10 @@ public:
 
     bool IsImmortal() const {
         return immortal;
+    }
+
+    bool IsAlive() const {
+        return isAlive;
     }
 
 };

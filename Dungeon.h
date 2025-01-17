@@ -11,7 +11,7 @@ class Player;
 class Dungeon {
 private:
     int roomsNum;
-    std::vector<Room> rooms;
+    std::vector<std::unique_ptr<Room>> rooms;
     std::vector<sf::Vector2i> openDoors;
     int currentRoom;
     Player player;

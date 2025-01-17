@@ -7,20 +7,19 @@
 #include "Dungeon.h"
 #include "Skeleton.h"
 
-Room::Room()
-    : TILE_SIZE(32), ROOM_WIDTH(13), ROOM_HEIGHT(7),
-      NUM_OBSTACLES(4), difficult(Difficulty::Easy) {
-}
-
-Room::Room(Difficulty difficulty)
+Room::Room(Difficulty difficulty, const int roomCount)
         : TILE_SIZE(32), ROOM_WIDTH(13), ROOM_HEIGHT(7),
-          NUM_OBSTACLES(4), difficult(difficulty) {
+          NUM_OBSTACLES(6), difficult(difficulty), roomCount(roomCount) {
 }
 
 Room::~Room() {
 }
 
 void Room::Initialize() {
+    std::cout << "Initializing room..." << std::endl;
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    NUM_OBSTACLES = std::rand() % 9;
+
     sprite.setPosition(sf::Vector2f(0, 0));
     InitializeDoors();
     GenerateObstacles();
@@ -34,14 +33,21 @@ void Room::Initialize() {
 
     GenerateEnemies(difficult);
     isCleared = false;
+
+    roomNumberText.setFont(font);
+    roomNumberText.setCharacterSize(16);
+    roomNumberText.setFillColor(sf::Color::White);
+    if(Globals::IsDebugMode()) {
+        roomNumberText.setString("Room " + std::to_string(roomCount));
+    } else {
+        roomNumberText.setString("Room " + std::to_string(++roomCount));
+    }
+    roomNumberText.setPosition(32.f, 32.f * 7 - 25);
 }
 
 void Room::Load() {
     if(!texture.loadFromFile("../Assets/Map/background.png")) {
         std::cerr << "Failed to load background texture in Room" << std::endl;
-    }
-    if(!fireTexture.loadFromFile("../Assets/Map/fire.png")) {
-        std::cerr << "Failed to load fire texture in Room" << std::endl;
     }
     if (!doorOpenTexture.loadFromFile("../Assets/Map/Doors/openDoor.png")) {
         std::cerr << "Failed to load open door texture in Room" << std::endl;
@@ -58,6 +64,9 @@ void Room::Load() {
     if (!heartDoorTexture.loadFromFile("../Assets/Map/Doors/heartDoor.png")) {
         std::cerr << "Failed to load heart door texture in Room" << std::endl;
     }
+    if (!font.loadFromFile("../Assets/Fonts/VipnagorgiallaBd.otf")) {
+        std::cerr << "Failed to load VipnagorgiallaBd font" << std::endl;
+    }
 }
 
 void Room::Update(const float &deltaTime, Player& player) {
@@ -65,7 +74,7 @@ void Room::Update(const float &deltaTime, Player& player) {
         enemy->Update(deltaTime, player);
     }
 
-    player.CheckBulletCollisions(deltaTime, enemies, obstacles, tiles);
+    player.CheckBulletCollisions(deltaTime, enemies, tiles);
 
     if (IsRoomCleared() && !isCleared) {
         std::cout << "Cleared!" << std::endl;
@@ -73,7 +82,10 @@ void Room::Update(const float &deltaTime, Player& player) {
         isCleared = true;
     }
 
-    HandleFireAnimation(deltaTime);
+    for (auto& obstacle : obstacles) {
+        obstacle->Update(deltaTime);
+    }
+
     ClearDeadEnemies();
 }
 
@@ -84,8 +96,8 @@ void Room::Draw(sf::RenderWindow &window) {
         window.draw(tile);
     }
 
-    for (const auto& fireSprite : fireSprites) {
-        window.draw(fireSprite);
+    for (auto& obstacle : obstacles) {
+        obstacle->Draw(window);
     }
 
     for (const auto& enemy : enemies) {
@@ -96,6 +108,7 @@ void Room::Draw(sf::RenderWindow &window) {
     window.draw(doorDieSprite);
     window.draw(doorDickSprite);
     window.draw(doorHeartSprite);
+    window.draw(roomNumberText);
 
     if (isCleared) {
         window.draw(doorOpenSprite);
@@ -140,23 +153,26 @@ void Room::InitializeDoors() {
 void Room::GenerateObstacles() {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
     obstacles.clear();
-    fireSprites.clear();
 
     while (obstacles.size() < NUM_OBSTACLES) {
         int x = std::rand() % (ROOM_WIDTH - 4) + 2;
         int y = std::rand() % (ROOM_HEIGHT - 4) + 2;
-        obstacles.push_back(sf::Vector2i(x, y));
 
-        sf::Sprite fireSprite;
-        fireSprite.setTexture(fireTexture);
+        bool positionOccupied = false;
+        for (const auto& obstacle : obstacles) {
+            if (obstacle->GetPosition().x == x && obstacle->GetPosition().y == y) {
+                positionOccupied = true;
+                break;
+            }
+        }
 
-
-        fireSprite.setTextureRect(sf::IntRect(currentFrame * 24, 0, 24, 32));
-        fireSprite.setPosition(x * TILE_SIZE + 15, y * TILE_SIZE + 4);
-        fireSprite.setOrigin(fireSprite.getLocalBounds().width / 2.f, fireSprite.getLocalBounds().height / 2.f);
-        fireSprite.setScale(2.2f, 1.7f);
-
-        fireSprites.push_back(fireSprite);
+        if (!positionOccupied) {
+            if (std::rand() % 2 == 0) {
+                obstacles.push_back(new RockObstacle({x, y}));
+            } else {
+                obstacles.push_back(new FireObstacle({x, y}));
+            }
+        }
     }
 }
 
@@ -167,9 +183,13 @@ bool Room::IsWallTile(int x, int y) const {
 bool Room::IsExitTile(int x, int y) const {
     return (x == doorTop.x && y == doorTop.y) || (x == doorBottom.x && y == doorBottom.y) || (x == doorLeft.x && y == doorLeft.y) || (x == doorRight.x && y == doorRight.y);
 }
-
 bool Room::IsObstacleTile(int x, int y) const {
-    return std::find(obstacles.begin(), obstacles.end(), sf::Vector2i(x, y)) != obstacles.end();
+    for (auto& obstacle : obstacles) {
+        if (obstacle->GetPosition() == sf::Vector2i(x, y)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Room::GenerateTiles() {
@@ -306,18 +326,6 @@ bool Room::IsPlayerEnterNewRoom(Player& player) const {
     }
     return false;
 };
-
-void Room::HandleFireAnimation(const float &deltaTime) {
-    animationTimer += deltaTime;
-    if (animationTimer >= animationDuration) {
-        animationTimer = 0.f;
-        currentFrame = (currentFrame + 1) % 8;
-
-        for (auto& fireSprite : fireSprites) {
-            fireSprite.setTextureRect(sf::IntRect(currentFrame * 24, 0, 24, 32));
-        }
-    }
-}
 
 void Room::ClearDeadEnemies() {
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),

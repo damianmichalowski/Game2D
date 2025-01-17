@@ -6,21 +6,22 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Globals.h"
+#include "Obstacle.h"
+#include "FireObstacle.h"
+#include "RockObstacle.h"
 
 class Player;
 class Enemy;
 
 class Room {
-private:
+protected:
     sf::Sprite sprite;
     sf::Texture texture;
     const int TILE_SIZE;         // Rozmiar kafelka w pikselach
     const int ROOM_WIDTH;        // Liczba kafelków w poziomie
     const int ROOM_HEIGHT;        // Liczba kafelków w pionie
-    const int NUM_OBSTACLES;
-    std::vector<sf::Vector2i> obstacles;
-    sf::Texture fireTexture;
-    std::vector<sf::Sprite> fireSprites;
+    int NUM_OBSTACLES;
+    std::vector<Obstacle*> obstacles;
     std::vector<sf::RectangleShape> tiles;
     sf::Vector2i doorTop;
     sf::Vector2i doorBottom;
@@ -43,14 +44,17 @@ private:
     //testing
     sf::RectangleShape openDoorRect;
 
+    int roomCount;
+    sf::Font font;
+    sf::Text roomNumberText;
+
 public:
-    Room();
-    Room(Difficulty difficult);
-    ~Room();
-    void Initialize();
+    Room(Difficulty difficult, const int roomCount);
+    virtual ~Room();
+    virtual void Initialize();
     void Load();
-    void Update(const float& deltaTime, Player& player);
-    void Draw(sf::RenderWindow& window);
+    virtual void Update(const float& deltaTime, Player& player);
+    virtual void Draw(sf::RenderWindow& window);
     void InitializeDoors();
     void GenerateObstacles();
     bool IsWallTile(int x, int y) const;
@@ -61,7 +65,6 @@ public:
     bool IsRoomCleared() const;
     void OpenRandomDoor();
     bool IsPlayerEnterNewRoom(Player& player) const;
-    void HandleFireAnimation(const float &deltaTime);
     void ClearDeadEnemies();
 
     int GetRoomWidthPX() const {
@@ -72,7 +75,7 @@ public:
         return ROOM_HEIGHT * TILE_SIZE;
     }
 
-    std::vector<sf::Vector2i> GetObstacles() const{
+    std::vector<Obstacle*> GetObstacles() const{
         return obstacles;
     }
 

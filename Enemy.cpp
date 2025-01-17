@@ -55,10 +55,9 @@ void Enemy::Load() {
 }
 
 void Enemy::Update(float deltaTime, Player& player) {
-    if (health <= 0) {
-        isAlive = false;
-        return;
-    }
+    if(!isAlive) return;
+    if(!player.IsAlive()) return;
+
 
     sprite.setPosition(hitBox.getPosition());
     sf::Vector2f hitBoxCenter = hitBox.getPosition() + sf::Vector2f(hitBox.getSize().x / 2.f, hitBox.getSize().y / 2.f);
@@ -122,10 +121,10 @@ bool Enemy::CheckCollision(const sf::Vector2f& newPosition) {
 
     // Obstacle collison
     for (const auto& obstacle : currentRoom->GetObstacles()) {
-        sf::FloatRect obstacleRect(obstacle.x * 32, obstacle.y * 32, 32, 32);
+        sf::FloatRect obstacleRect(obstacle->GetPosition().x * 32, obstacle->GetPosition().y * 32, 32, 32);
         sf::FloatRect enemyRect(newPosition.x, newPosition.y, hitBox.getGlobalBounds().width, hitBox.getGlobalBounds().height);
 
-        if (enemyRect.intersects(obstacleRect)) {
+        if (enemyRect.intersects(obstacleRect) && obstacle->IsDanger() == false) {
             return true;
         }
     }
@@ -145,6 +144,7 @@ void Enemy::CheckIsPlayerCollision(Player& player, bool isImmortal) {
 
 void Enemy::TakeDamage(int hp) {
     health -= hp;
+    if(health <= 0) isAlive = false;
     healthText.setString(std::to_string(health));
 }
 

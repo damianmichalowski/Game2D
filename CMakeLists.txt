@@ -37,5 +37,13 @@ add_executable(gameCpp main.cpp
         Difficulty.h
         Globals.cpp
         Globals.h
+        Obstacle.cpp
+        Obstacle.h
+        FireObstacle.cpp
+        FireObstacle.h
+        RockObstacle.cpp
+        RockObstacle.h
+        TreasureRoom.cpp
+        TreasureRoom.h
 )
 target_link_libraries(gameCpp sfml-graphics)

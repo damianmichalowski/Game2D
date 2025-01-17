@@ -15,7 +15,8 @@ animationSpeed(150.0f),
 frameCount(8),
 maxHealth(3),
 takeDamageCooldownTimer(0),
-takeDamageCooldown(1000) {
+takeDamageCooldown(1000),
+isAlive(true){
 }
 
 Player::~Player() {
@@ -42,6 +43,16 @@ void Player::Initialize(Room& room) {
     int spriteYIndex = 2;
     sprite.setTextureRect(sf::IntRect(spriteXIndex * spriteSize.x, spriteYIndex * spriteSize.y, spriteSize.x, spriteSize.y));
 
+    dieImageSprite.setTexture(dieImageTexture);
+
+    float scaleX = 416.0f / 800.0f;
+    float scaleY = scaleX;
+    dieImageSprite.setScale(scaleX, scaleY);
+
+    float posX = 0.0f;
+    float posY = (224.0f - (450.0f * scaleY)) / 2.0f;
+    dieImageSprite.setPosition(posX, posY);
+
     sprite.setScale(32.f / spriteSize.x, 32.f / spriteSize.y);
     sprite.setOrigin(spriteSize.x / 4.f, spriteSize.y / 2.f);
     sf::Vector2f hitBoxCenter = sf::Vector2f(hitBox.getPosition().x + hitBox.getSize().x / 2.f, hitBox.getPosition().y + hitBox.getSize().y / 2.f);
@@ -62,48 +73,57 @@ void Player::Load(){
     if (!heartTexture.loadFromFile("../Assets/UI/heart32x32.png")) {
         std::cerr << "Failed to load heart" << std::endl;
     }
+
+    if(!dieImageTexture.loadFromFile("../Assets/UI/youdied.png")) {
+        std::cerr << "Failed to load youdied in player" << std::endl;
+    }
 }
 
 
 void Player::Update(float& deltaTime) {
-    HandleMovement(deltaTime);
-    HandleShooting(deltaTime);
-    sprite.setPosition(hitBox.getPosition());
+    if(isAlive > 0) {
+        HandleMovement(deltaTime);
+        HandleShooting(deltaTime);
+        sprite.setPosition(hitBox.getPosition());
 
-    if (immortal) {
-        takeDamageCooldownTimer += deltaTime;
-        if(takeDamageCooldownTimer >= takeDamageCooldown/3) {
-            sprite.setColor(originalColor);
-        }
+        if (immortal) {
+            takeDamageCooldownTimer += deltaTime;
+            if(takeDamageCooldownTimer >= takeDamageCooldown/3) {
+                sprite.setColor(originalColor);
+            }
 
-        if(takeDamageCooldownTimer >= takeDamageCooldown/2) {
-            sprite.setColor(sf::Color::Red);
-        }
+            if(takeDamageCooldownTimer >= takeDamageCooldown/2) {
+                sprite.setColor(sf::Color::Red);
+            }
 
-        if (takeDamageCooldownTimer >= takeDamageCooldown) {
-            immortal = false;
-            sprite.setColor(originalColor);
-            takeDamageCooldownTimer = 0;
+            if (takeDamageCooldownTimer >= takeDamageCooldown) {
+                immortal = false;
+                sprite.setColor(originalColor);
+                takeDamageCooldownTimer = 0;
+            }
         }
     }
 }
 
 void Player::Draw(sf::RenderWindow& window) {
-    window.draw(hitBox);
-    window.draw(sprite);
-    
-    for (Bullet* bullet: bullets) {
-        bullet->Draw(window);
-    }
+    if(isAlive > 0) {
+        window.draw(hitBox);
+        window.draw(sprite);
 
-    for (int i = 0; i < hearts.size(); ++i) {
-        hearts[i].setPosition(sf::Vector2f(32 + i * 12, 5));
-    }
+        for (Bullet* bullet: bullets) {
+            bullet->Draw(window);
+        }
 
-    for (int i = 0; i < currentHealth; i++) {
-        window.draw(hearts[i]);
-    }
+        for (int i = 0; i < hearts.size(); ++i) {
+            hearts[i].setPosition(sf::Vector2f(32 + i * 12, 5));
+        }
 
+        for (int i = 0; i < currentHealth; i++) {
+            window.draw(hearts[i]);
+        }
+    }else {
+        window.draw(dieImageSprite);
+    }
 }
 
 void Player::HandleMovement(float& deltaTime) {
@@ -151,11 +171,15 @@ bool Player::CheckCollision(const sf::Vector2f& newPosition) {
 
     // Obstacle Collision
     for (const auto& obstacle : currentRoom->GetObstacles()) {
-        sf::FloatRect obstacleRect(obstacle.x * 32, obstacle.y * 32, 32, 32);
+        sf::FloatRect obstacleRect(obstacle->GetPosition().x * 32, obstacle->GetPosition().y * 32, 32, 32);
         sf::FloatRect playerRect(newPosition.x, newPosition.y, hitBox.getGlobalBounds().width, hitBox.getGlobalBounds().height);
 
-        if (playerRect.intersects(obstacleRect)) {
+        if (playerRect.intersects(obstacleRect) && obstacle->IsDanger()) {
             TakeDamage(1);
+        }
+
+        if (playerRect.intersects(obstacleRect) && obstacle->IsDanger() == false) {
+            return true;
         }
     }
     return false;
@@ -209,7 +233,7 @@ void Player::HandleShooting(const float& deltaTime) {
     }
 }
 
-void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies, std::vector<sf::Vector2i>& obstacles,std::vector<sf::RectangleShape>& tiles) {
+void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& enemies,std::vector<sf::RectangleShape>& tiles) {
     for (auto& bullet : bullets) {
         if (!bullet->IsAlive()) continue;
 
@@ -224,12 +248,8 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
         }
 
         //obstacles collision
-        for (const auto& obstacle : obstacles) {
-            sf::RectangleShape obstacleRect;
-            obstacleRect.setSize(sf::Vector2f(32, 32));
-            obstacleRect.setPosition(static_cast<float>(obstacle.x * 32), static_cast<float>(obstacle.y * 32));
-
-            if (bullet->CheckCollision(obstacleRect)) {
+        for (const auto& obstacle : currentRoom->GetObstacles()) {
+            if (bullet->CheckCollision(obstacle->GetObstacleRect()) && obstacle->IsDanger() == false) {
                 std::cout << "bullet collision with obstacle" << std::endl;
                 bullet->SetAlive(false);
                 break;
@@ -257,11 +277,40 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
     bullets.end());
 }
 
+void Player::CheckBulletCollisions(const float &deltaTime, std::vector<sf::RectangleShape> &tiles) {
+    for (auto& bullet : bullets) {
+        if (!bullet->IsAlive()) continue;
+
+        bullet->Update(deltaTime);
+
+        //walls collision
+        for (const auto& tile : tiles) {
+            if (currentRoom->IsWallTile(tile.getPosition().x, tile.getPosition().y)) {
+                if(bullet->CheckCollision(tile)) {
+                    std::cout << "Bullet collision with wall tile" << std::endl;
+                    bullet->SetAlive(false);
+                    break;
+                }
+            }
+        }
+    }
+
+    bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+     [](Bullet* bullet) {
+         bool toRemove = !bullet->IsAlive();
+         if (toRemove) delete bullet;
+         return toRemove;
+     }),
+    bullets.end());
+}
 
 
 void Player::TakeDamage(int damage) {
     if (!immortal) {
         currentHealth -= damage;
+        if(currentHealth <= 0) {
+            isAlive = false;
+        }
         immortal = true;
         damageTimer = 0.0f;
         originalColor = sprite.getColor();
