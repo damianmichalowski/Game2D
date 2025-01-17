@@ -96,19 +96,14 @@ void Room::Draw(sf::RenderWindow &window) {
         window.draw(tile);
     }
 
-    for (auto& obstacle : obstacles) {
-        obstacle->Draw(window);
-    }
-
-    for (const auto& enemy : enemies) {
-        enemy->Draw(window);
-    }
-
     window.draw(doorClosedSprite);
     window.draw(doorDieSprite);
     window.draw(doorDickSprite);
     window.draw(doorHeartSprite);
-    window.draw(roomNumberText);
+
+    for (const auto& enemy : enemies) {
+        enemy->Draw(window);
+    }
 
     if (isCleared) {
         window.draw(doorOpenSprite);
@@ -116,6 +111,12 @@ void Room::Draw(sf::RenderWindow &window) {
             window.draw(openDoorRect);
         }
     }
+
+    for (auto& obstacle : obstacles) {
+        obstacle->Draw(window);
+    }
+
+    window.draw(roomNumberText);
 }
 
 void Room::InitializeDoors() {
