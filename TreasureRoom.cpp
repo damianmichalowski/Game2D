@@ -148,6 +148,7 @@ void TreasureRoom::CheckItemCollection(Player& player) {
     for (auto& item : items) {
         if (!item->IsCollected() && player.GetGlobalBounds().intersects(item->GetGlobalBounds())) {
             std::cout << "Collision with item" << std::endl;
+            PlayUpSound();
             itemText.setString(item->GetText());
             sf::FloatRect textBounds = itemText.getLocalBounds();
             itemText.setOrigin(textBounds.left + textBounds.width / 2.0f,
@@ -159,4 +160,12 @@ void TreasureRoom::CheckItemCollection(Player& player) {
             isCleared = true;
         }
     }
+}
+
+void TreasureRoom::PlayUpSound() {
+    if (!buffer.loadFromFile("../Assets/Sounds/up.mp3")) {
+        std::cout << "Failed to load door sound" << std::endl;
+    }
+    upSound.setBuffer(buffer);
+    upSound.play();
 }

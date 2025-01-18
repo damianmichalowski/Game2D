@@ -1,4 +1,7 @@
 #include "Dungeon.h"
+
+#include "SFML/Audio/Sound.hpp"
+#include "SFML/Audio/SoundBuffer.hpp"
 Dungeon::Dungeon() : currentRoom(0), maxRoomCooldown(1000), enterRoomTimer(0) {}
 
 Dungeon::~Dungeon() {

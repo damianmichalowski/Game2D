@@ -8,6 +8,20 @@
 
 Charger::Charger(float x, float y) : Enemy(x, y),directionChangeTimer(0), directionChangeInterval(2000), attackTimer(0), attackInterval(0){
     speed = 0.07f;
+    inactiveTimer = 0.f;
+    int randDirection = rand() % 3;
+
+    switch (randDirection) {
+        case 0:
+            direction = sf::Vector2f(1.0f, 0.0f);
+        break;
+        case 1:
+            direction = sf::Vector2f(-1.0f, 0.0f);
+        break;
+        case 2:
+            direction = sf::Vector2f(0.0f, -1.0f);
+        break;
+    }
 }
 
 Charger::~Charger() {

@@ -4,6 +4,8 @@
 
 class TreasureRoom : public Room {
 private:
+    sf::SoundBuffer buffer;
+    sf::Sound upSound;
     float openNextRoomTimer;
     std::vector<std::unique_ptr<Item>> items;
     bool isNextRoomOpen;
@@ -20,6 +22,7 @@ public:
     void Initialize() override;
     void Update(float &deltaTime, Player &player) override;
     void Draw(sf::RenderWindow &window) override;
+    void PlayUpSound();
 
     void GenerateItems();
     void CheckItemCollection(Player& player);

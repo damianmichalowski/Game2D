@@ -9,12 +9,16 @@
 #include "Obstacle.h"
 #include "FireObstacle.h"
 #include "RockObstacle.h"
-
+#include <SFML/Audio.hpp>
 class Player;
 class Enemy;
 
 class Room {
 protected:
+    sf::SoundBuffer buffer;
+    sf::SoundBuffer deathBuffer;
+    sf::Sound sound;
+    sf::Sound deathEnemySound;
     sf::Sprite sprite;
     sf::Texture texture;
     const int TILE_SIZE;         // Rozmiar kafelka w pikselach
@@ -68,6 +72,8 @@ public:
     bool IsPlayerEnterNewRoom(Player& player) const;
     bool IsPlayerEnterPrevRoom(Player& player) const;
     void ClearDeadEnemies();
+    void PlaySound();
+    void PlayDeathSound();
 
     int GetRoomWidthPX() const {
         return ROOM_WIDTH * TILE_SIZE;

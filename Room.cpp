@@ -8,6 +8,8 @@
 #include "Charger.h"
 #include "Dungeon.h"
 #include "Skeleton.h"
+#include "SFML/Audio/Sound.hpp"
+#include "SFML/Audio/SoundBuffer.hpp"
 
 Room::Room(Difficulty difficulty, const int currentRoom,sf::Vector2i prevDoor)
         : TILE_SIZE(32), ROOM_WIDTH(13), ROOM_HEIGHT(7),
@@ -310,6 +312,8 @@ bool Room::IsRoomCleared() const {
 }
 
 void Room::OpenRandomDoor() {
+    PlaySound();
+
     int randomDoor;
     sf::FloatRect openDoorBounds = doorOpenSprite.getLocalBounds();
     sf::Vector2i newDoorPosition;
@@ -422,10 +426,29 @@ bool Room::IsPlayerEnterPrevRoom(Player& player) const {
 
 void Room::ClearDeadEnemies() {
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
-    [](Enemy* enemy) {
+    [this](Enemy* enemy) {
         bool toRemove = !enemy->IsAlive();
-        if (toRemove) delete enemy;
+        if (toRemove) {
+            PlayDeathSound();
+            delete enemy;
+        };
         return toRemove;
     }),
    enemies.end());
+}
+
+void Room::PlaySound() {
+    if (!buffer.loadFromFile("../Assets/Sounds/door.mp3")) {
+        std::cout << "Failed to load door sound" << std::endl;
+    }
+    sound.setBuffer(buffer);
+    sound.play();
+}
+
+void Room::PlayDeathSound() {
+    if (!deathBuffer.loadFromFile("../Assets/Sounds/deathEnemy.mp3")) {
+        std::cout << "Failed to load door sound" << std::endl;
+    }
+    deathEnemySound.setBuffer(deathBuffer);
+    deathEnemySound.play();
 }

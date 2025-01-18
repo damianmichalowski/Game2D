@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Enemy.h"
 #include "Bullet.h"
 #include "Room.h"
@@ -11,6 +12,10 @@ class Room;
 
 class Player {
 private:
+    sf::SoundBuffer buffer;
+    sf::Sound shootingSound;
+    sf::Sound hurtSound;
+
     sf::RectangleShape hitBox;
     sf::Sprite sprite;
     sf::Texture texture;
@@ -71,6 +76,8 @@ public:
     void SetCurrentRoom(Room& room);
     sf::Vector2f GetCenterHitBox() const;
     sf::Vector2f GetCenterSprite() const;
+    void PlayShootingSound();
+    void PlayHurtSound();
 
     sf::RectangleShape GetHitBox() {
         return hitBox;

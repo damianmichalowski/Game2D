@@ -2,7 +2,7 @@
 
 Player::Player() :
 playerSpeed(0.1f),
-damage(10),
+damage(40),
 fireSpeed(0.2f),
 maxFireRate(360),
 fireRateTimer(0),
@@ -231,6 +231,7 @@ void Player::HandleShooting(const float& deltaTime) {
                 bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Default);
             }
             bullets.push_back(bullet);
+            PlayShootingSound();
             fireRateTimer = 0;
         }
     }
@@ -311,6 +312,7 @@ void Player::CheckBulletCollisions(const float &deltaTime, std::vector<sf::Recta
 void Player::TakeDamage(int damage) {
     if (!immortal) {
         currentHealth -= damage;
+        PlayHurtSound();
         if(currentHealth <= 0) {
             isAlive = false;
         }
@@ -339,4 +341,20 @@ sf::Vector2f Player::GetCenterSprite() const {
 
 void Player::SetPosition(sf::Vector2f newPosition) {
     hitBox.setPosition(newPosition);
+}
+
+void Player::PlayShootingSound() {
+    if (!buffer.loadFromFile("../Assets/Sounds/tearFire.mp3")) {
+        std::cout << "Failed to load door sound" << std::endl;
+    }
+    shootingSound.setBuffer(buffer);
+    shootingSound.play();
+}
+
+void Player::PlayHurtSound() {
+    if (!buffer.loadFromFile("../Assets/Sounds/hurt.mp3")) {
+        std::cout << "Failed to load door sound" << std::endl;
+    }
+    hurtSound.setBuffer(buffer);
+    hurtSound.play();
 }

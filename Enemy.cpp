@@ -7,7 +7,7 @@ Enemy::Enemy(const float x, const float y)
 : posX(x), posY(y), health(100),
 damage(1), speed(0.03f), isAlive(true),
 animationTimer(0.0f), animationSpeed(150.0f), currentFrame(0), frameCount(8),
-inactiveTimer(0.0f), maxInactiveCooldown(1500){}
+inactiveTimer(0.0f), maxInactiveCooldown(1000){}
 
 Enemy::~Enemy() {
     std::cout << "Enemy destructed" << std::endl;
@@ -65,7 +65,7 @@ void Enemy::Update(float& deltaTime, Player& player) {
     healthText.setPosition(sf::Vector2f(hitBox.getPosition().x + 3, hitBox.getPosition().y - 16.f));
 
     inactiveTimer+=deltaTime;
-    if(inactiveTimer >= maxInactiveCooldown) {
+    if(inactiveTimer >= 0) {
         bool isPlayerInVision = visionBox.getGlobalBounds().intersects(player.GetHitBox().getGlobalBounds());
 
         if (isPlayerInVision) {
@@ -144,7 +144,9 @@ void Enemy::CheckIsPlayerCollision(Player& player, bool isImmortal) {
 
 void Enemy::TakeDamage(int hp) {
     health -= hp;
-    if(health <= 0) isAlive = false;
+    if(health <= 0) {
+        isAlive = false;
+    }
     healthText.setString(std::to_string(health));
 }
 

@@ -52,4 +52,4 @@ add_executable(gameCpp main.cpp
         BombMan.cpp
         BombMan.h
 )
-target_link_libraries(gameCpp sfml-graphics)
+target_link_libraries(gameCpp sfml-graphics sfml-window sfml-system sfml-audio)

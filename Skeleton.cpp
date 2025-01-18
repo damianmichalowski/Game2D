@@ -124,3 +124,4 @@ void Skeleton::CheckBulletCollisions(float& deltaTime, Player& player ,std::vect
      }),
     bullets.end());
 }
+

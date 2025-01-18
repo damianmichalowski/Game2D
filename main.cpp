@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "Dungeon.h"
 #include "FrameRate.h"
@@ -9,6 +10,12 @@ auto main() -> int {
     sf::RenderWindow window(sf::VideoMode(desktopMode.width * 0.8, desktopMode.height * 0.8), "Game2D", sf::Style::Default, sf::ContextSettings(0, 0, 8));
     window.setFramerateLimit(180);
     std::srand(static_cast<unsigned>(std::time(nullptr)));
+
+    sf::Music music;
+    if (!music.openFromFile("../Assets/Music/zombie.wav")) {
+        std::cerr << "music faild to load" << std::endl;
+    }
+
 
     FrameRate frameRate;
     Dungeon dungeon;
@@ -21,6 +28,11 @@ auto main() -> int {
 
     frameRate.Initialize(view);
     dungeon.Initialize();
+
+    music.setLoop(true);
+    music.setVolume(50);
+
+    music.play();
 
     sf::Clock clock;
     while (window.isOpen()){
