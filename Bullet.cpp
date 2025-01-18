@@ -25,22 +25,28 @@ void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, i
 
     switch (type) {
         case Default:
-            if(!tearTexture.loadFromFile("../Assets/Bullet/eyeTear.png")) {
-                std::cerr << "Failed to load bullet texture" << std::endl;
+            if(!defaultTexture.loadFromFile("../Assets/Bullet/eyeTear.png")) {
+                std::cerr << "Failed to load eyeTear texture" << std::endl;
             }
-            texture = &tearTexture;
+            texture = &defaultTexture;
         break;
         case Player:
-            if(!tearTexture.loadFromFile("../Assets/Bullet/eyeTear.png")) {
-                std::cerr << "Failed to load bullet texture" << std::endl;
+            if(!tearTexture.loadFromFile("../Assets/Bullet/redEyeTear.png")) {
+                std::cerr << "Failed to load eyeTear texture" << std::endl;
             }
             texture = &tearTexture;
         break;
         case Skeleton:
             if(!skeletonBulletTexture.loadFromFile("../Assets/Bullet/inchTear.png")) {
-                std::cerr << "Failed to load bullet texture" << std::endl;
+                std::cerr << "Failed to load inchTear texture" << std::endl;
             }
             texture = &skeletonBulletTexture;
+        break;
+        case Bomb:
+            if(!bombTexture.loadFromFile("../Assets/Bullet/bombTear.png")) {
+                std::cerr << "Failed to load bombTear texture" << std::endl;
+            }
+        texture = &bombTexture;
         break;
     }
 

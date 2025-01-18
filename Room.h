@@ -60,7 +60,7 @@ public:
     bool IsExitTile(int x, int y) const;
     bool IsObstacleTile(int x, int y) const;
     void GenerateTiles();
-    void GenerateEnemies(Difficulty difficulty);
+    void GenerateEnemies(Difficulty difficulty, int currentRoom);
     bool IsRoomCleared() const;
     void OpenRandomDoor();
     void OpenPrevDoor();

@@ -7,7 +7,8 @@ public:
     enum Type {
         Default,
         Player,
-        Skeleton
+        Skeleton,
+        Bomb
     };
 private:
     sf::RectangleShape bulletShape;
@@ -17,6 +18,7 @@ private:
     sf::Texture defaultTexture;
     sf::Texture tearTexture;
     sf::Texture skeletonBulletTexture;
+    sf::Texture bombTexture;
 
     sf::Vector2f direction;
     float speed;

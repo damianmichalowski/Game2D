@@ -47,5 +47,9 @@ add_executable(gameCpp main.cpp
         TreasureRoom.h
         Item.cpp
         Item.h
+        Charger.cpp
+        Charger.h
+        BombMan.cpp
+        BombMan.h
 )
 target_link_libraries(gameCpp sfml-graphics)

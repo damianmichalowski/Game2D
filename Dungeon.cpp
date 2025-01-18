@@ -52,23 +52,26 @@ void Dungeon::Draw(sf::RenderWindow& window) {
 
 void Dungeon::CreateNextRoom() {
     currentRoom++;
-    Difficulty difficulty = static_cast<Difficulty>(currentRoom % 3);
-
     sf::Vector2i prevDoor = rooms[currentRoom - 1]->GetOpenDoor();
     prevDoors.emplace_back(prevDoor);
 
-    if ((currentRoom) % 2 == 0) {
-    // if (true) {
-        rooms.push_back(std::make_unique<TreasureRoom>(currentRoom, prevDoor)); // TreasureRoom
+    if (currentRoom % 3 == 0) {
+        rooms.push_back(std::make_unique<TreasureRoom>(currentRoom, prevDoor));
     } else {
+        Difficulty difficulty;
+        if (currentRoom < 6) {
+            difficulty = Difficulty::Easy;
+        } else if (currentRoom < 12) {
+            difficulty = Difficulty::Medium;
+        } else {
+            difficulty = Difficulty::Hard;
+        }
         rooms.push_back(std::make_unique<Room>(difficulty, currentRoom, prevDoor));
     }
-
 
     rooms[currentRoom]->Load();
     rooms[currentRoom]->Initialize();
     player.SetCurrentRoom(*rooms[currentRoom]);
-
     SetPlayerPositionInNextRoom(prevDoor);
 }
 

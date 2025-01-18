@@ -26,7 +26,7 @@ void Player::Initialize(Room& room) {
     currentRoom = &room;
 
     hitBox.setSize(sf::Vector2f(15,15));
-    hitBox.setPosition(sf::Vector2f(40,40));
+    hitBox.setPosition(sf::Vector2f(32.f*6,32.f*6-15));
     hitBox.setFillColor(sf::Color::Transparent);
 
     if(Globals::IsDebugMode()) {
@@ -225,7 +225,11 @@ void Player::HandleShooting(const float& deltaTime) {
         if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
             std::cout << "playe shootingDirection: " << shootingDirection.x << " " << shootingDirection.y << std::endl;
-            bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Player);
+            if(damage >= 30) {
+                bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Player);
+            } else {
+                bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Default);
+            }
             bullets.push_back(bullet);
             fireRateTimer = 0;
         }

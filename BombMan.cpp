@@ -1,29 +1,28 @@
-#include "Skeleton.h"
-#include <iostream>
+#include "BombMan.h"
 
-Skeleton::Skeleton(float x, float y): Enemy(x, y),
+BombMan::BombMan(float x, float y): Enemy(x, y),
 fireSpeed(0.08f),
 fireRateTimer(0),
 bulletMaxAliveTime(10000)
 {
-    damage = 1;
-    maxFireRate = 1500 + std::rand() % 501;;
+    damage = 2;
+    maxFireRate = 3000 + std::rand() % 501;;
 }
 
-Skeleton::~Skeleton() {
-    std::cout << "Skeleton destructed" << std::endl;
+BombMan::~BombMan() {
+    std::cout << "Bombam destructed" << std::endl;
 }
 
-void Skeleton::Load() {
+void BombMan::Load() {
     Enemy::Load();
-    if (!texture.loadFromFile("../Assets/Skeleton/Textures/BODY_skeleton.png")) {
-        std::cerr << "Failed to load skeleton.png" << std::endl;
+    if (!texture.loadFromFile("../Assets/BombMan/witchKitty.png")) {
+        std::cerr << "Failed to load witchKitty.png" << std::endl;
     }
 
     sprite.setTexture(texture);
 }
 
-void Skeleton::Update(float& deltaTime, Player& player) {
+void BombMan::Update(float& deltaTime, Player& player) {
     if(!isAlive) return;
     if(!player.IsAlive()) return;
 
@@ -46,7 +45,7 @@ void Skeleton::Update(float& deltaTime, Player& player) {
     }
 }
 
-void Skeleton::Draw(sf::RenderWindow &window) {
+void BombMan::Draw(sf::RenderWindow &window) {
     Enemy::Draw(window);
 
     for (Bullet* bullet: bullets) {
@@ -54,7 +53,7 @@ void Skeleton::Draw(sf::RenderWindow &window) {
     }
 }
 
-void Skeleton::Attack(float& deltaTime, Player &player) {
+void BombMan::Attack(float& deltaTime, Player &player) {
     fireRateTimer+=deltaTime;
     if (fireRateTimer >= maxFireRate) {
         sf::Vector2f bulletDirection = player.GetCenterHitBox() - GetCenterSprite();
@@ -62,7 +61,7 @@ void Skeleton::Attack(float& deltaTime, Player &player) {
 
         if (bulletDirection.x != 0.0f || bulletDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
-            bullet->Initialize(sf::Vector2f(GetCenterHitBox().x - 6, GetCenterHitBox().y - 8), bulletDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Skeleton);
+            bullet->Initialize(sf::Vector2f(GetCenterHitBox().x - 6, GetCenterHitBox().y - 8), bulletDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Bomb);
             std::cout << "skeleton bullet direction: " << bulletDirection.x << bulletDirection.y << std::endl;
             bullets.push_back(bullet);
             fireRateTimer = 0;
@@ -83,36 +82,14 @@ void Skeleton::Attack(float& deltaTime, Player &player) {
 //     }
 // }
 
-void Skeleton::CheckBulletCollisions(float& deltaTime, Player& player ,std::vector<sf::RectangleShape>& tiles) {
+void BombMan::CheckBulletCollisions(float& deltaTime, Player& player ,std::vector<sf::RectangleShape>& tiles) {
     for (auto& bullet : bullets) {
         if (!bullet->IsAlive()) continue;
-
-        bullet->Update(deltaTime);
 
         if (bullet->CheckCollision(player.GetHitBox()) && player.IsAlive()) {
             player.TakeDamage(bullet->GetDamage());
             bullet->SetAlive(false);
             break;
-        }
-
-        //obstacles collision
-        for (const auto& obstacle : currentRoom->GetObstacles()) {
-            if (bullet->CheckCollision(obstacle->GetObstacleRect()) && obstacle->IsDanger() == false) {
-                std::cout << "skeleton bullet collision with obstacle" << std::endl;
-                bullet->SetAlive(false);
-                break;
-            }
-        }
-
-        //walls collision
-        for (const auto& tile : tiles) {
-            if (currentRoom->IsWallTile(tile.getPosition().x, tile.getPosition().y)) {
-                if(bullet->CheckCollision(tile)) {
-                    std::cout << "skeleton Bullet collision with wall tile" << std::endl;
-                    bullet->SetAlive(false);
-                    break;
-                }
-            }
         }
     }
 
@@ -123,4 +100,27 @@ void Skeleton::CheckBulletCollisions(float& deltaTime, Player& player ,std::vect
          return toRemove;
      }),
     bullets.end());
+}
+
+void BombMan::HandleAnimation(float& deltaTime, bool isPlayerInVision) {
+    animationTimer += deltaTime;
+    frameCount = 4;
+
+    if (isPlayerInVision) {
+        if (direction != sf::Vector2f(0.0f, 0.0f)) {
+            if (animationTimer >= animationSpeed) {
+                currentFrame = (currentFrame + 1) % frameCount;
+                animationTimer = 0.0f;
+            }
+
+            int row = 0;
+            if (direction.x > 0) row = 3;
+            else if (direction.x < 0) row = 2;
+            else if (direction.y < 0) row = 1;
+
+            sprite.setTextureRect(sf::IntRect(currentFrame * spriteSize.x, row * spriteSize.y, spriteSize.x, spriteSize.y));
+        }
+    } else {
+        sprite.setTextureRect(sf::IntRect(0, 2 * spriteSize.y, spriteSize.x, spriteSize.y));
+    }
 }

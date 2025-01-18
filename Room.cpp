@@ -4,6 +4,8 @@
 #include <ctime>
 #include <iostream>
 
+#include "BombMan.h"
+#include "Charger.h"
 #include "Dungeon.h"
 #include "Skeleton.h"
 
@@ -32,7 +34,7 @@ void Room::Initialize() {
     float scaleY = static_cast<float>(ROOM_HEIGHT * TILE_SIZE) / texture.getSize().y;
     sprite.setScale(scaleX, scaleY);
 
-    GenerateEnemies(difficult);
+    GenerateEnemies(difficult, currentRoom);
     isCleared = false;
 
     roomNumberText.setFont(font);
@@ -241,46 +243,62 @@ void Room::GenerateTiles() {
     }
 }
 
-void Room::GenerateEnemies(Difficulty difficulty) {
-    int enemiesCount = 0;
+void Room::GenerateEnemies(Difficulty difficulty, int currentRoom) {
+    const std::unordered_map<Difficulty, int> difficultyToEnemies = {
+        {Difficulty::Easy, 2},
+        {Difficulty::Medium, 4},
+        {Difficulty::Hard, 6}
+    };
 
-    if (difficulty == Difficulty::Easy) {
-        enemiesCount = 2;
-    } else if (difficulty == Difficulty::Medium) {
-        enemiesCount = 4;
-    } else if (difficulty == Difficulty::Hard) {
-        enemiesCount = 6;
-    }
+    int enemiesCount = difficultyToEnemies.at(difficulty);
 
     std::vector<sf::Vector2i> availablePositions;
-
     for (int y = 2; y < ROOM_HEIGHT - 2; ++y) {
         for (int x = 2; x < ROOM_WIDTH - 2; ++x) {
-
-            bool isOccupied = false;
-            if (IsObstacleTile(x, y)) {
-                isOccupied = true;
-            }
-
-            if (!isOccupied) {
-                availablePositions.push_back(sf::Vector2i(x, y));
+            if (!IsObstacleTile(x, y)) {
+                availablePositions.emplace_back(x, y);
             }
         }
     }
 
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
-    for (int i = 0; i < enemiesCount; i++) {
+    int skeletonCount = 0;
+
+    for (int i = 0; i < enemiesCount; ++i) {
         int randomIndex = std::rand() % availablePositions.size();
         sf::Vector2i spawnPosition = availablePositions[randomIndex];
-
         availablePositions.erase(availablePositions.begin() + randomIndex);
 
-        Skeleton* enemy = new Skeleton(spawnPosition.x * TILE_SIZE, spawnPosition.y * TILE_SIZE);
-        enemy->Load();
-        enemy->Initialize(std::ref(*this));
-        enemies.push_back(enemy);
+        if ((difficulty == Difficulty::Medium && skeletonCount < 1) ||
+            (difficulty == Difficulty::Hard && skeletonCount < 2)) {
+            auto* skeleton = new Skeleton(spawnPosition.x * TILE_SIZE, spawnPosition.y * TILE_SIZE);
+            skeleton->Load();
+            skeleton->Initialize(std::ref(*this));
+            enemies.push_back(skeleton);
+            ++skeletonCount;
+        } else {
+            int randomType = std::rand() % 3;
+
+            if (randomType == 1) {
+                auto* bombMan = new BombMan(spawnPosition.x * TILE_SIZE, spawnPosition.y * TILE_SIZE);
+                bombMan->Load();
+                bombMan->Initialize(std::ref(*this));
+                enemies.push_back(bombMan);
+            } else if (randomType == 2) {
+                auto* charger = new Charger(spawnPosition.x * TILE_SIZE, spawnPosition.y * TILE_SIZE);
+                charger->Load();
+                charger->Initialize(std::ref(*this));
+                enemies.push_back(charger);
+            } else {
+                auto* skeleton = new Skeleton(spawnPosition.x * TILE_SIZE, spawnPosition.y * TILE_SIZE);
+                skeleton->Load();
+                skeleton->Initialize(std::ref(*this));
+                enemies.push_back(skeleton);
+                ++skeletonCount;
+            }
+        }
     }
 }
+
 
 bool Room::IsRoomCleared() const {
     for (auto& enemy : enemies) {

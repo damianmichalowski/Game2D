@@ -45,7 +45,7 @@ public:
     virtual void Draw(sf::RenderWindow& window);
     virtual void HandleAnimation(float& deltaTime, bool isPlayerInVision);
     virtual void HandleMovement(float& deltaTime, Player& player);
-    bool CheckCollision(const sf::Vector2f& newPosition);
+    virtual bool CheckCollision(const sf::Vector2f& newPosition);
     void SetCurrentRoom(Room& room);
     virtual void CheckIsPlayerCollision(Player &player, bool isImmortal);
     void TakeDamage(int damage);
