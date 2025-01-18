@@ -12,7 +12,7 @@ Bullet::~Bullet() {
     std::cout << "Bullet destructed" << std::endl;
 }
 
-void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, int damage, float speed, float maxAliveTime) {
+void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, int damage, float speed, float maxAliveTime, Type type) {
     this->damage = damage;
     this->speed = speed;
     this->maxAliveTime = maxAliveTime;
@@ -23,11 +23,29 @@ void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, i
         bulletShape.setFillColor(sf::Color::Red);
     }
 
-    if(!texture.loadFromFile("../Assets/Bullet/tears.png")) {
-        std::cerr << "Failed to load bullet texture" << std::endl;
+    switch (type) {
+        case Default:
+            if(!tearTexture.loadFromFile("../Assets/Bullet/eyeTear.png")) {
+                std::cerr << "Failed to load bullet texture" << std::endl;
+            }
+            texture = &tearTexture;
+        break;
+        case Player:
+            if(!tearTexture.loadFromFile("../Assets/Bullet/eyeTear.png")) {
+                std::cerr << "Failed to load bullet texture" << std::endl;
+            }
+            texture = &tearTexture;
+        break;
+        case Skeleton:
+            if(!skeletonBulletTexture.loadFromFile("../Assets/Bullet/inchTear.png")) {
+                std::cerr << "Failed to load bullet texture" << std::endl;
+            }
+            texture = &skeletonBulletTexture;
+        break;
     }
 
-    sprite.setTexture(texture);
+
+    sprite.setTexture(*texture);
     sprite.setTextureRect(frameRect);
     sprite.setOrigin(frameRect.width / 2.0f, frameRect.height / 2.0f);
     sprite.setPosition(bulletShape.getPosition() + bulletShape.getSize() / 2.0f);
@@ -49,7 +67,7 @@ void Bullet::Update(float deltaTime) {
     sprite.setPosition(bulletShape.getPosition() + bulletShape.getSize() / 2.0f);
 
     aliveTimer += deltaTime;
-    AnimateBullet();
+    AnimateBullet(deltaTime);
 
     if (aliveTimer >= maxAliveTime) {
         aliveTimer = 0;
@@ -65,7 +83,7 @@ void Bullet::Draw(sf::RenderWindow &window) {
     }
 }
 
-void Bullet::AnimateBullet() {
+void Bullet::AnimateBullet(float deltaTime) {
     const int framesPerColumn = 5;
 
     int currentFrame = static_cast<int>((aliveTimer / 300) * framesPerColumn);
@@ -76,6 +94,9 @@ void Bullet::AnimateBullet() {
 
     frameRect.left = currentFrame * 32;
     frameRect.top = 32;
+    if(texture == &skeletonBulletTexture) {
+        frameRect.top = 97;
+    }
     sprite.setTextureRect(frameRect);
 }
 

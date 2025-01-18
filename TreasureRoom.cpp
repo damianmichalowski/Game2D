@@ -1,6 +1,6 @@
 #include "TreasureRoom.h"
 
-TreasureRoom::TreasureRoom(const int currentRoom, sf::Vector2i prevDoor) : Room(Difficulty::Easy, currentRoom, prevDoor), openNextRoomTimer(0) {
+TreasureRoom::TreasureRoom(const int currentRoom, sf::Vector2i prevDoor) : Room(Difficulty::Easy, currentRoom, prevDoor), openNextRoomTimer(0), textTimer(0)  {
     std::cout << "TreasureRoom constructor" << std::endl;
 }
 
@@ -34,10 +34,17 @@ void TreasureRoom::Initialize() {
     }
     roomNumberText.setPosition(32.f, 32.f * 7 - 25);
 
+    if(!font.loadFromFile("../Assets/Fonts/VipnagorgiallaBd.otf")) {
+        std::cerr<<"Failed to load font in Item"<<std::endl;
+    };
+
+    itemText.setFont(font);
+    itemText.setCharacterSize(20);
+    itemText.setFillColor(sf::Color::White);
     GenerateItems();
 }
 
-void TreasureRoom::Update(const float &deltaTime, Player& player) {
+void TreasureRoom::Update(float &deltaTime, Player& player) {
     player.CheckBulletCollisions(deltaTime, tiles);
 
     openNextRoomTimer += deltaTime;
@@ -85,6 +92,13 @@ void TreasureRoom::Draw(sf::RenderWindow &window) {
         }
     }else {
         items.clear();
+        sf::Time deltaTimeTimer = clock.restart();
+        float deltaTime = deltaTimeTimer.asMicroseconds() / 1000.0;
+        textTimer += deltaTime;
+
+        if (textTimer <= 5000) {
+            window.draw(itemText);
+        }
     }
 
 
@@ -109,7 +123,7 @@ void TreasureRoom::GenerateItems() {
     if(firstRandom == 0) {
         items.push_back(std::make_unique<Item>(Item::Type::HealthPotion, sf::Vector2f(first, y)));
     } else {
-        items.push_back(std::make_unique<Item>(Item::Type::LongerBulletALive, sf::Vector2f(first, y)));
+        items.push_back(std::make_unique<Item>(Item::Type::FireRateSpeed, sf::Vector2f(first, y)));
     }
 
     if (secondRandom == 0) {
@@ -123,11 +137,10 @@ void TreasureRoom::GenerateItems() {
     if(thirdRandom == 0) {
         items.push_back(std::make_unique<Item>(Item::Type::DamageBoost, sf::Vector2f(third, y)));
     } else if(thirdRandom == 1) {
-        items.push_back(std::make_unique<Item>(Item::Type::FireRateSpeed, sf::Vector2f(third, y)));
+        items.push_back(std::make_unique<Item>(Item::Type::LongerBulletALive, sf::Vector2f(third, y)));
     } else {
 
     }
-
 }
 
 
@@ -135,7 +148,14 @@ void TreasureRoom::CheckItemCollection(Player& player) {
     for (auto& item : items) {
         if (!item->IsCollected() && player.GetGlobalBounds().intersects(item->GetGlobalBounds())) {
             std::cout << "Collision with item" << std::endl;
+            itemText.setString(item->GetText());
+            sf::FloatRect textBounds = itemText.getLocalBounds();
+            itemText.setOrigin(textBounds.left + textBounds.width / 2.0f,
+                           textBounds.top + textBounds.height / 2.0f);
+            itemText.setPosition(416 / 2.0f, 224/ 2.0f);
+            std::cout << item->GetText() << std::endl;
             item->Collect(item->GetType(), player);
+            textTimer = 0;
             isCleared = true;
         }
     }

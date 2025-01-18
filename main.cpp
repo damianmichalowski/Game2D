@@ -8,6 +8,7 @@ auto main() -> int {
     sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(desktopMode.width * 0.8, desktopMode.height * 0.8), "Game2D", sf::Style::Default, sf::ContextSettings(0, 0, 8));
     window.setFramerateLimit(180);
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     FrameRate frameRate;
     Dungeon dungeon;

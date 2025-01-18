@@ -2,7 +2,7 @@
 
 Player::Player() :
 playerSpeed(0.1f),
-damage(50),
+damage(10),
 fireSpeed(0.2f),
 maxFireRate(360),
 fireRateTimer(0),
@@ -224,7 +224,8 @@ void Player::HandleShooting(const float& deltaTime) {
 
         if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
-            bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime);
+            std::cout << "playe shootingDirection: " << shootingDirection.x << " " << shootingDirection.y << std::endl;
+            bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime, Bullet::Player);
             bullets.push_back(bullet);
             fireRateTimer = 0;
         }
@@ -238,7 +239,7 @@ void Player::CheckBulletCollisions(const float& deltaTime, std::vector<Enemy*>& 
         bullet->Update(deltaTime);
 
         for (auto& enemy : enemies) {
-            if (bullet->CheckCollision(enemy->GetHitbox()) && enemy->IsAlive()) {
+            if (bullet->CheckCollision(enemy->GetHitBox()) && enemy->IsAlive()) {
                 enemy->TakeDamage(bullet->GetDamage());
                 bullet->SetAlive(false);
                 break;

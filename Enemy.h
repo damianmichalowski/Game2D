@@ -38,32 +38,23 @@ protected:
 
 public:
     Enemy(float x, float y);
-    ~Enemy();
+    virtual ~Enemy();
     virtual void Initialize(Room& room);
     virtual void Load();
-    virtual void Update(float deltaTime, Player& player);
+    virtual void Update(float& deltaTime, Player& player);
     virtual void Draw(sf::RenderWindow& window);
-    virtual void HandleAnimation(float deltaTime, bool isPlayerInVision);
-    void HandleMovement(float deltaTime, Player& player);
+    virtual void HandleAnimation(float& deltaTime, bool isPlayerInVision);
+    virtual void HandleMovement(float& deltaTime, Player& player);
     bool CheckCollision(const sf::Vector2f& newPosition);
     void SetCurrentRoom(Room& room);
-
-
     virtual void CheckIsPlayerCollision(Player &player, bool isImmortal);
-    // virtual void Attack();
-    // virtual void Die();
-
     void TakeDamage(int damage);
-    bool IsAlive() const {
-        return isAlive;
-    }
-    sf::FloatRect GetGlobalBounds() const {
-        return hitBox.getGlobalBounds();
-    }
-
-    sf::RectangleShape GetHitbox() const {
-        return hitBox;
-    }
+    bool IsAlive() const { return isAlive; }
+    sf::Vector2f GetCenterHitBox() const;
+    sf::Vector2f GetCenterSprite() const;
+    sf::RectangleShape GetHitBox() const { return hitBox;}
+    sf::FloatRect GetGlobalBounds() const { return hitBox.getGlobalBounds();}
+    virtual void CheckBulletCollisions(float& deltaTime, Player& player ,std::vector<sf::RectangleShape>& tiles);
 };
 
 #endif // ENEMY_H

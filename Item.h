@@ -23,6 +23,7 @@ private:
     bool collected;
     sf::Texture texture;
     sf::Vector2f position;
+    std::string text;
 
 public:
     Item(Type type, sf::Vector2f position);
@@ -46,5 +47,9 @@ public:
 
     void setPosition(sf::Vector2f newPosition) {
         position = newPosition;
+    }
+
+    std::string GetText() const {
+        return text;
     }
 };

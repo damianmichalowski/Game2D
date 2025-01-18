@@ -73,9 +73,10 @@ void Room::Load() {
     }
 }
 
-void Room::Update(const float &deltaTime, Player& player) {
+void Room::Update(float &deltaTime, Player& player) {
     for (auto& enemy : enemies) {
         enemy->Update(deltaTime, player);
+        enemy->CheckBulletCollisions(deltaTime, player, tiles);
     }
 
     player.CheckBulletCollisions(deltaTime, enemies, tiles);

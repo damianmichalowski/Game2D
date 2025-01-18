@@ -52,7 +52,7 @@ public:
     virtual ~Room();
     virtual void Initialize();
     void Load();
-    virtual void Update(const float& deltaTime, Player& player);
+    virtual void Update(float& deltaTime, Player& player);
     virtual void Draw(sf::RenderWindow& window);
     void InitializeDoors();
     void GenerateObstacles();

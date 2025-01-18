@@ -18,7 +18,7 @@ void Enemy::Initialize(Room& room) {
     hitBox.setPosition(sf::Vector2f(posX, posY));
     hitBox.setFillColor(sf::Color::Transparent);
 
-    visionBox.setSize(sf::Vector2f(hitBox.getSize().x * 12, hitBox.getSize().y * 12));
+    visionBox.setSize(sf::Vector2f(hitBox.getSize().x * 28, hitBox.getSize().y * 12));
     visionBox.setPosition(hitBox.getPosition());
     visionBox.setFillColor(sf::Color::Transparent);
     visionBox.setOrigin(visionBox.getSize().x / 2.f, visionBox.getSize().y / 2.f);
@@ -54,7 +54,7 @@ void Enemy::Load() {
     }
 }
 
-void Enemy::Update(float deltaTime, Player& player) {
+void Enemy::Update(float& deltaTime, Player& player) {
     if(!isAlive) return;
     if(!player.IsAlive()) return;
 
@@ -86,7 +86,7 @@ void Enemy::Draw(sf::RenderWindow& window) {
     }
 }
 
-void Enemy::HandleMovement(float deltaTime, Player& player) {
+void Enemy::HandleMovement(float& deltaTime, Player& player) {
     direction = player.GetHitBox().getPosition() - hitBox.getPosition();
     direction = Math::NormalizeVector(direction);
 
@@ -148,7 +148,7 @@ void Enemy::TakeDamage(int hp) {
     healthText.setString(std::to_string(health));
 }
 
-void Enemy::HandleAnimation(float deltaTime, bool isPlayerInVision) {
+void Enemy::HandleAnimation(float& deltaTime, bool isPlayerInVision) {
     animationTimer += deltaTime;
 
     if (isPlayerInVision) {
@@ -168,4 +168,19 @@ void Enemy::HandleAnimation(float deltaTime, bool isPlayerInVision) {
     } else {
         sprite.setTextureRect(sf::IntRect(0, 2 * spriteSize.y, spriteSize.x, spriteSize.y));
     }
+}
+
+sf::Vector2f Enemy::GetCenterHitBox() const {
+    sf::FloatRect bounds = hitBox.getGlobalBounds();
+    sf::Vector2f center(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    return center;
+}
+
+sf::Vector2f Enemy::GetCenterSprite() const {
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+    sf::Vector2f center(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    return center;
+}
+
+void Enemy::CheckBulletCollisions(float &deltaTime, Player &player, std::vector<sf::RectangleShape> &tiles) {
 }

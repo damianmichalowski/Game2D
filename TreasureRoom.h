@@ -9,11 +9,16 @@ private:
     bool isNextRoomOpen;
     bool isCleared;
 
+    sf::Font font;
+    sf::Text itemText;
+    float textTimer;
+    sf::Clock clock;
+
 public:
     TreasureRoom(const int currentRoom,sf::Vector2i prevDoor = sf::Vector2i(0, 0));
     ~TreasureRoom();
     void Initialize() override;
-    void Update(const float &deltaTime, Player &player) override;
+    void Update(float &deltaTime, Player &player) override;
     void Draw(sf::RenderWindow &window) override;
 
     void GenerateItems();

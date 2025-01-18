@@ -25,7 +25,6 @@ private:
     const int roomWidth = 32*13;
     const int roomHeight = 32*7;
 
-
     public:
     Dungeon();
     ~Dungeon();
