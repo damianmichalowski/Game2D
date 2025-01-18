@@ -37,8 +37,6 @@ protected:
     //testing
     sf::RectangleShape openDoorRect;
     sf::RectangleShape prevDoorRect;
-    bool openedDoorCollision = false;
-    //std::vector<Item> items;
 
     //fire animation
     float animationTimer = 0.f;

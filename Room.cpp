@@ -138,10 +138,10 @@ void Room::InitializeDoors() {
     doorRight = sf::Vector2i(ROOM_WIDTH - 1, ROOM_HEIGHT / 2);
 
     doorOpenSprite.setTexture(doorOpenTexture);
-    doorOpenSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
+    doorOpenSprite.setPosition(1000, 0);
 
     prevDoorSprite.setTexture(prevDoorTexture);
-    prevDoorSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);
+    prevDoorSprite.setPosition(1000, 0);
 
     doorClosedSprite.setTexture(doorClosedTexture);
     doorClosedSprite.setPosition(doorTop.x * TILE_SIZE, doorTop.y * TILE_SIZE);

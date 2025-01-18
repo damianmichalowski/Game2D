@@ -22,6 +22,7 @@ void TreasureRoom::Initialize() {
     sprite.setScale(scaleX, scaleY);
 
     isCleared = false;
+    isNextRoomOpen = false;
 
     roomNumberText.setFont(font);
     roomNumberText.setCharacterSize(16);
@@ -32,18 +33,21 @@ void TreasureRoom::Initialize() {
         roomNumberText.setString("Room " + std::to_string(currentRoom));
     }
     roomNumberText.setPosition(32.f, 32.f * 7 - 25);
+
+    GenerateItems();
 }
 
 void TreasureRoom::Update(const float &deltaTime, Player& player) {
-
     player.CheckBulletCollisions(deltaTime, tiles);
 
     openNextRoomTimer += deltaTime;
-    if (openNextRoomTimer >= 4000 && !isCleared) {
+    if (openNextRoomTimer >= 1000 && !isNextRoomOpen) {
         OpenPrevDoor();
         OpenRandomDoor();
-        isCleared = true;
+        isNextRoomOpen = true;
     }
+
+    CheckItemCollection(player);
 }
 
 void TreasureRoom::Draw(sf::RenderWindow &window) {
@@ -58,12 +62,81 @@ void TreasureRoom::Draw(sf::RenderWindow &window) {
     window.draw(doorDickSprite);
     window.draw(doorHeartSprite);
 
-    if (isCleared) {
-        window.draw(doorOpenSprite);
+    window.draw(doorOpenSprite);
+    if(currentRoom > 0) {
         window.draw(prevDoorSprite);
-        if(Globals::IsDebugMode()) {
-            window.draw(openDoorRect);
+    };
+
+    if(Globals::IsDebugMode()) {
+        window.draw(openDoorRect);
+        if(currentRoom > 0) {
             window.draw(prevDoorRect);
+        };
+    }
+
+
+    window.draw(roomNumberText);
+
+    if(!isCleared) {
+        for (auto& item : items) {
+            if(!item->IsCollected()) {
+                item->Draw(window);
+            }
+        }
+    }else {
+        items.clear();
+    }
+
+
+    items.erase(
+     std::remove_if(items.begin(), items.end(), [](const std::unique_ptr<Item>& item) {
+         return item->IsCollected();
+     }),
+     items.end());
+}
+
+void TreasureRoom::GenerateItems() {
+    float y = 32.f*3;
+    float first = 32.f*4;
+    float second = 32.f*6;
+    float third = 32.f*8;
+
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    int firstRandom = std::rand() % 2;
+    int secondRandom = std::rand() % 3;
+    int thirdRandom = std::rand() % 3;
+
+    if(firstRandom == 0) {
+        items.push_back(std::make_unique<Item>(Item::Type::HealthPotion, sf::Vector2f(first, y)));
+    } else {
+        items.push_back(std::make_unique<Item>(Item::Type::LongerBulletALive, sf::Vector2f(first, y)));
+    }
+
+    if (secondRandom == 0) {
+        items.push_back(std::make_unique<Item>(Item::Type::SpeedBoost, sf::Vector2f(second, y)));
+    } else if (secondRandom == 1) {
+        items.push_back(std::make_unique<Item>(Item::Type::DecreaseSpeed, sf::Vector2f(second, y)));
+    }else {
+
+    }
+
+    if(thirdRandom == 0) {
+        items.push_back(std::make_unique<Item>(Item::Type::DamageBoost, sf::Vector2f(third, y)));
+    } else if(thirdRandom == 1) {
+        items.push_back(std::make_unique<Item>(Item::Type::FireRateSpeed, sf::Vector2f(third, y)));
+    } else {
+
+    }
+
+}
+
+
+void TreasureRoom::CheckItemCollection(Player& player) {
+    for (auto& item : items) {
+        if (!item->IsCollected() && player.GetGlobalBounds().intersects(item->GetGlobalBounds())) {
+            std::cout << "Collision with item" << std::endl;
+            item->Collect(item->GetType(), player);
+            isCleared = true;
         }
     }
 }

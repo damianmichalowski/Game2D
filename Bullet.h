@@ -12,7 +12,7 @@ private:
     bool isAlive;
     float aliveTimer;
     float maxAliveTime;
-    float damage;
+    int damage;
     sf::IntRect frameRect;
     sf::Clock animationClock;
 
@@ -20,7 +20,7 @@ public:
     Bullet();
     ~Bullet();
 
-    void Initialize(const sf::Vector2f &position, sf::Vector2f &direction);
+    void Initialize(const sf::Vector2f &position, sf::Vector2f &direction, int damage = 10, float speed = 0.2f, float maxAliveTime = 1000);
     void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
     void AnimateBullet();

@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "Room.h"
+#include <iostream>
 
 class Enemy;
 class Room;
@@ -20,9 +21,12 @@ private:
     sf::Vector2f shootingDirection;
     float maxFireRate;
     float fireRateTimer;
+    float fireSpeed;
+    float bulletMaxAliveTime;
 
     float playerSpeed;
     sf::Vector2f direction;
+    int damage;
 
     //movement animation
     int currentFrame;
@@ -32,7 +36,6 @@ private:
 
     //health
     bool immortal;
-    int maxHealth;
     int currentHealth;
     sf::Texture heartTexture;
     std::vector<sf::Sprite> hearts;
@@ -89,6 +92,34 @@ public:
         return isAlive;
     }
 
+    void IncreaseHealth(int hearts) {
+        currentHealth += hearts;
+    }
+
+    void IncreaseSpeed(float factor) {
+        playerSpeed *= factor;
+        std::cout << "player speed increased: " << playerSpeed << std::endl;
+    }
+
+    void IncreaseDamage(int damageIncrease) {
+        damage += damageIncrease;
+        std::cout << "player damage increased: " << damage << std::endl;
+    }
+
+    void IncreaseFireRate(float factor) {
+        maxFireRate *= (1 / factor);
+        std::cout << "player maxFireRate: " << maxFireRate << std::endl;
+    }
+
+    void IncreaseBulletAlive(float factor) {
+        bulletMaxAliveTime *= factor;
+        std::cout << "bulletMaxAliveTime increased: " << bulletMaxAliveTime << std::endl;
+    }
+
+    void DecreaseSpeed(float factor) {
+        playerSpeed *= (1/factor);
+        std::cout << "player speed decreased: " << playerSpeed << std::endl;
+    }
 };
 
 

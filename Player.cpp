@@ -1,19 +1,19 @@
-#include <iostream>
 #include "Player.h"
-#include "Enemy.h"
-#include "Math.h"
 
 Player::Player() :
 playerSpeed(0.1f),
+damage(50),
+fireSpeed(0.2f),
 maxFireRate(360),
 fireRateTimer(0),
+bulletMaxAliveTime(1000),
 immortal(false),
 direction(0.0f, 0.0f),
 currentFrame(0),
 animationTimer(0.0f),
 animationSpeed(150.0f),
 frameCount(8),
-maxHealth(3),
+currentHealth(3),
 takeDamageCooldownTimer(0),
 takeDamageCooldown(1000),
 isAlive(true){
@@ -24,7 +24,6 @@ Player::~Player() {
 
 void Player::Initialize(Room& room) {
     currentRoom = &room;
-    currentHealth = maxHealth;
 
     hitBox.setSize(sf::Vector2f(15,15));
     hitBox.setPosition(sf::Vector2f(40,40));
@@ -42,6 +41,10 @@ void Player::Initialize(Room& room) {
     int spriteXIndex = 0;
     int spriteYIndex = 2;
     sprite.setTextureRect(sf::IntRect(spriteXIndex * spriteSize.x, spriteYIndex * spriteSize.y, spriteSize.x, spriteSize.y));
+    sprite.setScale(32.f / spriteSize.x, 32.f / spriteSize.y);
+    sprite.setOrigin(spriteSize.x / 4.f, spriteSize.y / 2.f);
+    sf::Vector2f hitBoxCenter = sf::Vector2f(hitBox.getPosition().x + hitBox.getSize().x / 2.f, hitBox.getPosition().y + hitBox.getSize().y / 2.f);
+    sprite.setPosition(hitBoxCenter);
 
     dieImageSprite.setTexture(dieImageTexture);
 
@@ -52,17 +55,6 @@ void Player::Initialize(Room& room) {
     float posX = 0.0f;
     float posY = (224.0f - (450.0f * scaleY)) / 2.0f;
     dieImageSprite.setPosition(posX, posY);
-
-    sprite.setScale(32.f / spriteSize.x, 32.f / spriteSize.y);
-    sprite.setOrigin(spriteSize.x / 4.f, spriteSize.y / 2.f);
-    sf::Vector2f hitBoxCenter = sf::Vector2f(hitBox.getPosition().x + hitBox.getSize().x / 2.f, hitBox.getPosition().y + hitBox.getSize().y / 2.f);
-    sprite.setPosition(hitBoxCenter);
-
-    for (int i = 0; i < maxHealth; i++) {
-        sf::Sprite heart(heartTexture);
-        heart.scale(sf::Vector2f(0.3f,0.3f));
-        hearts.push_back(heart);
-    }
 }
 
 void Player::Load(){
@@ -101,6 +93,12 @@ void Player::Update(float& deltaTime) {
                 sprite.setColor(originalColor);
                 takeDamageCooldownTimer = 0;
             }
+        }
+
+        for (int i = 0; i < currentHealth; i++) {
+            sf::Sprite heart(heartTexture);
+            heart.scale(sf::Vector2f(0.3f,0.3f));
+            hearts.push_back(heart);
         }
     }
 }
@@ -226,7 +224,7 @@ void Player::HandleShooting(const float& deltaTime) {
 
         if (shootingDirection.x != 0.0f || shootingDirection.y != 0.0f) {
             Bullet* bullet = new Bullet();
-            bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection);
+            bullet->Initialize(sf::Vector2f(GetCenterSprite().x - 6, GetCenterSprite().y), shootingDirection, damage, fireSpeed, bulletMaxAliveTime);
             bullets.push_back(bullet);
             fireRateTimer = 0;
         }

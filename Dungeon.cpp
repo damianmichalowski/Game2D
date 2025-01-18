@@ -1,5 +1,5 @@
 #include "Dungeon.h"
-Dungeon::Dungeon() : currentRoom(0), maxRoomCooldown(2000), enterRoomTimer(0) {}
+Dungeon::Dungeon() : currentRoom(0), maxRoomCooldown(1000), enterRoomTimer(0) {}
 
 Dungeon::~Dungeon() {
     rooms.clear();
@@ -57,7 +57,7 @@ void Dungeon::CreateNextRoom() {
     sf::Vector2i prevDoor = rooms[currentRoom - 1]->GetOpenDoor();
     prevDoors.emplace_back(prevDoor);
 
-    if (currentRoom == 3) {
+    if ((currentRoom) % 3 == 0) {
         rooms.push_back(std::make_unique<TreasureRoom>(currentRoom, prevDoor)); // TreasureRoom
     } else {
         rooms.push_back(std::make_unique<Room>(difficulty, currentRoom, prevDoor));

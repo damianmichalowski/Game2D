@@ -45,5 +45,7 @@ add_executable(gameCpp main.cpp
         RockObstacle.h
         TreasureRoom.cpp
         TreasureRoom.h
+        Item.cpp
+        Item.h
 )
 target_link_libraries(gameCpp sfml-graphics)

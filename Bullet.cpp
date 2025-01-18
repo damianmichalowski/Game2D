@@ -5,14 +5,17 @@
 #include "Globals.h"
 #include "Math.h"
 
-Bullet::Bullet() : speed(0.2f), damage(100.0f),maxAliveTime(1000), aliveTimer(0), isAlive(true), frameRect(0, 32, 32, 32) {
+Bullet::Bullet() : aliveTimer(0), isAlive(true), frameRect(0, 32, 32, 32) {
 }
 
 Bullet::~Bullet() {
     std::cout << "Bullet destructed" << std::endl;
 }
 
-void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction) {
+void Bullet::Initialize(const sf::Vector2f &position, sf::Vector2f &direction, int damage, float speed, float maxAliveTime) {
+    this->damage = damage;
+    this->speed = speed;
+    this->maxAliveTime = maxAliveTime;
     bulletShape.setSize(sf::Vector2f(13, 13));
     bulletShape.setPosition(position);
     bulletShape.setFillColor(sf::Color::Transparent);
