@@ -1,8 +1,10 @@
 #include "Player.h"
 
+#include <fstream>
+
 Player::Player() :
 playerSpeed(0.1f),
-damage(40),
+damage(20),
 fireSpeed(0.2f),
 maxFireRate(360),
 fireRateTimer(0),
@@ -357,4 +359,18 @@ void Player::PlayHurtSound() {
     }
     hurtSound.setBuffer(buffer);
     hurtSound.play();
+}
+
+void Player::SaveToFile(std::ofstream& file) {
+    file.write(reinterpret_cast<char*>(&currentHealth), sizeof(currentHealth));
+    file.write(reinterpret_cast<char*>(&currentRoom), sizeof(currentRoom));
+    file.write(reinterpret_cast<char*>(&isAlive), sizeof(isAlive));
+    file.write(reinterpret_cast<char*>(&damage), sizeof(damage));
+}
+
+void Player::LoadFromFile(std::ifstream& file) {
+    file.read(reinterpret_cast<char*>(&currentHealth), sizeof(currentHealth));
+    file.read(reinterpret_cast<char*>(&currentRoom), sizeof(currentRoom));
+    file.read(reinterpret_cast<char*>(&isAlive), sizeof(isAlive));
+    file.read(reinterpret_cast<char*>(&damage), sizeof(damage));
 }

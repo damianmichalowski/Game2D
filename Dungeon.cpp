@@ -1,8 +1,23 @@
 #include "Dungeon.h"
 
+#include <fstream>
+
 #include "SFML/Audio/Sound.hpp"
 #include "SFML/Audio/SoundBuffer.hpp"
-Dungeon::Dungeon() : currentRoom(0), maxRoomCooldown(1000), enterRoomTimer(0) {}
+Dungeon::Dungeon() : currentRoom(0), maxRoomCooldown(1000), enterRoomTimer(0), score(0) {
+    std::ifstream file("isGameSaved.dat");
+    if (!file.is_open()) {
+        std::cerr << "Error opening file isGameSaved.dat" << std::endl;
+    }
+    file.read(reinterpret_cast<char*>(&isGameSaved), sizeof(isGameSaved));
+    file.close();
+
+    if(isGameSaved) {
+        LoadFromFile("../Saves/SaveFile.dat");
+    }
+
+    std::cout << "score: " << score <<"isGameSaved: "  << isGameSaved << std::endl;
+}
 
 Dungeon::~Dungeon() {
     rooms.clear();
@@ -18,6 +33,20 @@ void Dungeon::Initialize() {
     rooms[currentRoom]->Load();
     rooms[currentRoom]->Initialize();
     player.Initialize(*rooms[currentRoom]);
+
+    if (!font.loadFromFile("../Assets/Fonts/VipnagorgiallaBd.otf")) {
+        std::cerr << "Failed to load VipnagorgiallaBd font" << std::endl;
+    }
+
+    scoreText.setFont(font);
+    scoreText.setCharacterSize(16);
+    scoreText.setFillColor(sf::Color::White);
+    if(Globals::IsDebugMode()) {
+        scoreText.setString("High Score" + std::to_string(score));
+    } else {
+        scoreText.setString("High Score " + std::to_string(score));
+    }
+    scoreText.setPosition(32.f*8, 32.f * 7 - 25);
 }
 
 void Dungeon::Load() {
@@ -51,10 +80,17 @@ void Dungeon::Update(float& deltaTime) {
 void Dungeon::Draw(sf::RenderWindow& window) {
     rooms[currentRoom]->Draw(window);
     player.Draw(window);
+    window.draw(scoreText);
 }
 
 void Dungeon::CreateNextRoom() {
+    if (currentRoom > score) {
+        score++;
+        scoreText.setString("High Score " + std::to_string(score));
+    }
     currentRoom++;
+    SaveToFile("../Saves/SaveFile.dat");
+
     sf::Vector2i prevDoor = rooms[currentRoom - 1]->GetOpenDoor();
     prevDoors.emplace_back(prevDoor);
 
@@ -113,4 +149,32 @@ void Dungeon::SetPlayerPositionInPrevRoom(sf::Vector2i  currentDoor) {
     } else if (currentDoor == rooms[currentRoom]->GetRightDoor()) {
         player.SetPosition(sf::Vector2f(roomWidth - 32 - 15, roomHeight / 2));
     }
+}
+
+void Dungeon::SaveToFile(const std::string& pathFile) {
+    std::ofstream isSavedFile("isGameSaved.dat", std::ios::binary);
+    std::ofstream file(pathFile, std::ios::binary);
+    if(!file.is_open()) {
+        std::cerr << "File could not be opened" << std::endl;
+    }
+    file.write(reinterpret_cast<char*>(&score), sizeof(score));
+    file.close();
+    isSavedFile.write(reinterpret_cast<char*>(&isGameSaved), sizeof(isGameSaved));
+    isSavedFile.close();
+    isGameSaved = true;
+    std::cout << "I am saving game" << std::endl;
+}
+
+void Dungeon::LoadFromFile(const std::string& pathFile) {
+    std::ofstream isSavedFile("isGameSaved.dat", std::ios::binary);
+    std::ifstream file(pathFile, std::ios::binary);
+    if(!file.is_open()) {
+        std::cerr << "File could not be opened" << std::endl;
+    }
+    file.read(reinterpret_cast<char*>(&score), sizeof(score));
+    file.close();
+    isSavedFile.write(reinterpret_cast<char*>(&isGameSaved), sizeof(isGameSaved));
+    isSavedFile.close();
+    isGameSaved = false;
+    std::cout << "I loded game" << std::endl;
 }

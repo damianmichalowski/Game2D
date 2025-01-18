@@ -13,6 +13,7 @@ class Player;
 
 class Dungeon {
 private:
+    bool isGameSaved;
     int roomsNum;
     std::vector<std::unique_ptr<Room>> rooms;
     std::vector<sf::Vector2i> openDoors;
@@ -21,6 +22,9 @@ private:
     Player player;
     float enterRoomTimer;
     float maxRoomCooldown;
+    int score;
+    sf::Font font;
+    sf::Text scoreText;
 
     const int roomWidth = 32*13;
     const int roomHeight = 32*7;
@@ -37,6 +41,9 @@ private:
     void BackToPrevRoom();
     void SetPlayerPositionInNextRoom(sf::Vector2i  prevDoor);
     void SetPlayerPositionInPrevRoom(sf::Vector2i  currentDoor);
+
+    void SaveToFile(const std::string &pathFile);
+    void LoadFromFile(const std::string &pathFile);
 };
 
 #endif // DUNGEON_H

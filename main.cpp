@@ -30,7 +30,7 @@ auto main() -> int {
     dungeon.Initialize();
 
     music.setLoop(true);
-    music.setVolume(50);
+    music.setVolume(10);
 
     music.play();
 

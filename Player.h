@@ -79,6 +79,10 @@ public:
     void PlayShootingSound();
     void PlayHurtSound();
 
+    void SaveToFile(std::ofstream &file);
+
+    void LoadFromFile(std::ifstream &file);
+
     sf::RectangleShape GetHitBox() {
         return hitBox;
     }
