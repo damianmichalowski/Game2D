@@ -1,6 +1,6 @@
-#include <iostream>
-#include <math.h>
 #include "Math.h"
+#include <iostream>
+#include <cmath>
 
 sf::Vector2f Math::NormalizeVector(sf::Vector2f& vector) {
     //chcemy wektor podzielić na kawałki o długości 1 z zachowaniem kierunku
