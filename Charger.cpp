@@ -49,11 +49,21 @@ void Charger::Initialize(Room &room) {
 void Charger::Update(float &deltaTime, Player &player) {
     if(!isAlive) return;
     if(!player.IsAlive()) return;
+
+    visionBox.setPosition(hitBox.getPosition());
+    visionBox.setSize(sf::Vector2f(hitBox.getSize().x * 50, hitBox.getSize().y * 20));
+
+    visionBox.setOrigin(visionBox.getSize().x / 2.f, visionBox.getSize().y / 2.f);
     sf::Vector2f hitBoxCenter = hitBox.getPosition() + sf::Vector2f(hitBox.getSize().x / 2.f, hitBox.getSize().y / 2.f);
     sprite.setPosition(hitBoxCenter);
-    border.setPosition(hitBoxCenter);
     visionBox.setPosition(hitBoxCenter);
     healthText.setPosition(sf::Vector2f(hitBox.getPosition().x + 3, hitBox.getPosition().y - 16.f));
+
+    // sf::Vector2f hitBoxCenter = hitBox.getPosition() + sf::Vector2f(hitBox.getSize().x / 2.f, hitBox.getSize().y / 2.f);
+    // sprite.setPosition(hitBoxCenter);
+    // border.setPosition(hitBoxCenter);
+    // visionBox.setPosition(hitBoxCenter);
+    // visionBox.setSize(sf::Vector2f(hitBox.getSize().x * 20, hitBox.getSize().y * 20));
 
     inactiveTimer+=deltaTime;
     if(inactiveTimer >= maxInactiveCooldown) {

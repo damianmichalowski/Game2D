@@ -36,6 +36,7 @@ protected:
     int frameCount;
 
     Room* currentRoom;
+    bool isPlayerInVision;
 
 public:
     Enemy(float x, float y);
