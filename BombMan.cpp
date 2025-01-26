@@ -1,11 +1,12 @@
 #include "BombMan.h"
 
 BombMan::BombMan(float x, float y): Enemy(x, y),
-fireSpeed(0.08f),
+fireSpeed(0.09f),
 fireRateTimer(0),
 bulletMaxAliveTime(10000)
 {
     damage = 2;
+    speed = 0.05f;
     maxFireRate = 1000 + std::rand() % 501;
 }
 

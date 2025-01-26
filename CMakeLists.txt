@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(gameCpp)
+project(MyIsaacGame)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -15,7 +15,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
-add_executable(gameCpp main.cpp
+add_executable(MyIsaacGame main.cpp
         Player.cpp
         Player.h
         Skeleton.cpp
@@ -52,4 +52,4 @@ add_executable(gameCpp main.cpp
         BombMan.cpp
         BombMan.h
 )
-target_link_libraries(gameCpp sfml-graphics sfml-window sfml-system sfml-audio)
+target_link_libraries(MyIsaacGame sfml-graphics sfml-window sfml-system sfml-audio)
