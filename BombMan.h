@@ -11,6 +11,8 @@ private:
     float fireRateTimer;
     float fireSpeed;
     float bulletMaxAliveTime;
+    float changeDirectionTimer;
+
 
 public:
     BombMan(float x, float y);
@@ -21,5 +23,6 @@ public:
     void Draw(sf::RenderWindow &window) override;
     void Attack(float& deltaTime, Player &player);
     void CheckBulletCollisions(float& deltaTime, Player& player ,std::vector<sf::RectangleShape>& tiles) override;
+    void HandleMovement(float &deltaTime, Player &player) override;
     void HandleAnimation(float &deltaTime, bool isPlayerInVision) override;
 };

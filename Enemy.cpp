@@ -7,7 +7,7 @@ Enemy::Enemy(const float x, const float y)
 : posX(x), posY(y), health(100),
 damage(1), speed(0.03f), isAlive(true),
 animationTimer(0.0f), animationSpeed(150.0f), currentFrame(0), frameCount(8),
-inactiveTimer(0.0f), maxInactiveCooldown(1000){}
+inactiveTimer(0.0f), maxInactiveCooldown(1000), isPlayerInVision(false){}
 
 Enemy::~Enemy() {
     std::cout << "Enemy destructed" << std::endl;
@@ -66,7 +66,7 @@ void Enemy::Update(float& deltaTime, Player& player) {
 
     inactiveTimer+=deltaTime;
     if(inactiveTimer >= 0) {
-        bool isPlayerInVision = visionBox.getGlobalBounds().intersects(player.GetHitBox().getGlobalBounds());
+        isPlayerInVision = visionBox.getGlobalBounds().intersects(player.GetHitBox().getGlobalBounds());
 
         if (isPlayerInVision) {
             HandleMovement(deltaTime, player);

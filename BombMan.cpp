@@ -1,12 +1,13 @@
 #include "BombMan.h"
 
 BombMan::BombMan(float x, float y): Enemy(x, y),
-fireSpeed(0.08f),
+fireSpeed(0.09f),
 fireRateTimer(0),
 bulletMaxAliveTime(10000)
 {
     damage = 2;
-    maxFireRate = 3000 + std::rand() % 501;;
+    speed = 0.05f;
+    maxFireRate = 1000 + std::rand() % 501;
 }
 
 BombMan::~BombMan() {
@@ -33,14 +34,16 @@ void BombMan::Update(float& deltaTime, Player& player) {
 
     inactiveTimer+=deltaTime;
     if(inactiveTimer >= maxInactiveCooldown) {
-        bool isPlayerInVision = visionBox.getGlobalBounds().intersects(player.GetHitBox().getGlobalBounds());
 
-        if (isPlayerInVision) {
-            HandleMovement(deltaTime, player);
-            Attack(deltaTime, player);
+        changeDirectionTimer+=deltaTime;
+        if(changeDirectionTimer >= 1000) {
+            isPlayerInVision = visionBox.getGlobalBounds().intersects(player.GetHitBox().getGlobalBounds());
+            changeDirectionTimer = 0;
         }
 
+        Attack(deltaTime, player);
         CheckIsPlayerCollision(player, player.IsImmortal());
+        HandleMovement(deltaTime, player);
         HandleAnimation(deltaTime, isPlayerInVision);
     }
 }
@@ -102,11 +105,51 @@ void BombMan::CheckBulletCollisions(float& deltaTime, Player& player ,std::vecto
     bullets.end());
 }
 
+void BombMan::HandleMovement(float& deltaTime, Player& player) {
+    visionBox.setPosition(hitBox.getPosition());
+    visionBox.setSize(sf::Vector2f(hitBox.getSize().x * 14, hitBox.getSize().y * 8));
+
+    visionBox.setOrigin(visionBox.getSize().x / 2.f, visionBox.getSize().y / 2.f);
+    sf::Vector2f hitBoxCenter = hitBox.getPosition() + sf::Vector2f(hitBox.getSize().x / 2.f, hitBox.getSize().y / 2.f);
+    sprite.setPosition(hitBoxCenter);
+    visionBox.setPosition(hitBoxCenter);
+
+
+    direction = player.GetHitBox().getPosition() - hitBox.getPosition();
+    direction = Math::NormalizeVector(direction);
+
+    sf::Vector2f position = hitBox.getPosition();
+
+    // X
+    sf::Vector2f newPositionX = position;
+    if (isPlayerInVision) {
+        newPositionX.x -= direction.x * speed * deltaTime;
+    } else {
+        newPositionX.x += direction.x * speed * deltaTime;
+    }
+    if (!CheckCollision(newPositionX)) {
+        position.x = newPositionX.x;
+    }
+
+    //Y
+    sf::Vector2f newPositionY = position;
+    if (isPlayerInVision) {
+        newPositionY.y -= direction.y * speed * deltaTime;
+    } else {
+        newPositionY.y += direction.y * speed * deltaTime;
+    }
+    if (!CheckCollision(newPositionY)) {
+        position.y = newPositionY.y;
+    }
+
+    hitBox.setPosition(position);
+    sprite.setPosition(hitBox.getPosition());
+}
+
 void BombMan::HandleAnimation(float& deltaTime, bool isPlayerInVision) {
     animationTimer += deltaTime;
     frameCount = 4;
 
-    if (isPlayerInVision) {
         if (direction != sf::Vector2f(0.0f, 0.0f)) {
             if (animationTimer >= animationSpeed) {
                 currentFrame = (currentFrame + 1) % frameCount;
@@ -120,7 +163,4 @@ void BombMan::HandleAnimation(float& deltaTime, bool isPlayerInVision) {
 
             sprite.setTextureRect(sf::IntRect(currentFrame * spriteSize.x, row * spriteSize.y, spriteSize.x, spriteSize.y));
         }
-    } else {
-        sprite.setTextureRect(sf::IntRect(0, 2 * spriteSize.y, spriteSize.x, spriteSize.y));
-    }
 }
