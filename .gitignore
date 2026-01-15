@@ -1,1 +1,54 @@
+# ===== CMake build dirs =====
+build/
+cmake-build-*/
 cmake-build-debug/
+cmake-build-release/
+
+# ===== JetBrains / CLion =====
+.idea/
+*.iml
+
+# ===== VS Code =====
+.vscode/
+*.code-workspace
+
+# ===== macOS =====
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS
+.DS_Store
+
+# JetBrains / CLion
+.idea/
+
+# CMake build
+build/
+cmake-build-*/
+
+# Game saves (runtime)
+Saves/
+*.dat
+
+# ===== Compiled binaries / objects =====
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# ===== CMake generated files =====
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+
+# ===== SFML / FetchContent deps (if they land in build) =====
+_deps/
